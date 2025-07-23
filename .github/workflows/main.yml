@@ -34,5 +34,5 @@ jobs:
       - name: Deploy to AWS Lambda (function name is internal-website)
         run: |
           aws lambda update-function-code \
-            --function-name public-website \
+            --function-name internal-website \
             --zip-file fileb://function.zip

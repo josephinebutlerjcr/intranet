@@ -1,0 +1,97 @@
+<link href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet" />
+<script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
+<br>
+<input type="file" id="upload" accept="image/*" autocomplete="off">
+<br>
+<div id="cropperWrapper" style="max-height: 300px; overflow: hidden;">
+    <img id="cropperPreview" />
+</div>
+<br>
+<button id="getCropped" type="button" style="display: none;">Crop & Use Image</button>
+<br>
+<input type="hidden" id="imageUrl" name="avatar" autocomplete="off">
+<img id="croppedPreview">
+<br>
+
+<script>
+    let cropper;
+    // upload
+    document.getElementById("upload").addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+            const img = document.getElementById("cropperPreview");
+            img.src = event.target.result;
+            img.style.display = "block";
+            document.getElementById("getCropped").style.display = "block"
+
+            if (cropper) cropper.destroy();
+            cropper = new Cropper(img, {
+                aspectRatio: 1, // SQUARE
+                viewMode: 1,
+                autoCropArea: 1,
+                responsive: true,
+                dragMode: "move",
+                cropBoxResizable: true,
+                cropBoxMovable: true, 
+                guides: false,
+                background: false
+            });
+        };
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // final
+    document.getElementById("getCropped").addEventListener("click", () => {
+        if (!cropper) return alert("Please upload and crop an image first.");
+
+        const canvas = cropper.getCroppedCanvas({
+            width: 512,
+            height: 512,
+            imageSmoothingQuality: "high"
+        });
+
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+
+        document.getElementById("imageUrl").value = dataUrl;
+
+        const preview = document.getElementById("croppedPreview");
+        preview.src = dataUrl;
+        preview.style.display = "block";
+        document.getElementById("getCropped").style.display = "none"
+
+        cropper.destroy();
+        cropper = null;
+        document.getElementById("cropperPreview").style.display = "none";
+    });
+</script>
+<style>
+    #cropperPreview {
+        max-width: 100%;
+        max-height: 300px;
+        display: none;
+        object-fit: contain;
+        background-color: white;
+    }
+    #croppedPreview {
+        max-width: 200px;
+        max-height: 200px;
+        display: none;
+        border: 1px solid #ccc;
+    }
+    ::file-selector-button,#getCropped {
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        background-color: #b1333a;
+    }
+    ::file-selector-button:hover,#getCropped:hover {
+        background-color: #f0d954;
+        color: #b1333a
+    }
+</style>

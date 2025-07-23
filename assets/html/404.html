@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="https://butler-jcr-public.s3.eu-west-2.amazonaws.com/assets/favicon.png">
+    <title>404 | Butler Intranet</title>
+    <link rel="stylesheet" href="https://main.butlerjcr.premraghvani.com/style.css" />
+    <style>
+        .error-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 4rem 1rem;
+        }
+
+        .error-wrapper img {
+            max-width: 400px;
+            width: 100%;
+            height: auto;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="/" style="color: white; text-decoration: none;">
+                    <img src="https://butler-jcr-public.s3.eu-west-2.amazonaws.com/assets/JCRLogo_128.png" alt="Crest"
+                        class="logo-img">
+                    Butler JCR Intranet
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/groups">Groups</a></li>
+                <li>Welcome, <b>{{cisCode}}</b></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="error-wrapper">
+            <img src="https://butler-jcr-public.s3.eu-west-2.amazonaws.com/assets/err.jpg" alt="404 - Not Found">
+            <h1 style="font-size: 2.5rem; margin-bottom: 1rem; color: #b1333a;">Page not found</h1>
+            <p style="font-size: 1.2rem;">Sorry, we couldn’t find what you were looking for.</p>
+            <p><a href="/">Return to the homepage</a></p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>©
+                <script>document.write(new Date().getFullYear());</script> Butler JCR
+            </p>
+            <p style="font-size: small;">Intranet - all legal disclaimers on the main website, <a
+                    href="https://www.butlerjcr.com">butlerjcr.com</a></p>
+        </div>
+    </footer>
+</body>
+
+</html>

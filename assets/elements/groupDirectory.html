@@ -1,0 +1,87 @@
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+
+<div class="groupSearch">
+    <input type="text" id="searchInput" placeholder="Search groups...">
+</div>
+
+<div class="section">
+    <h2>Sports</h2>
+    <div class="groupCardContainer" id="sports"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+</div>
+
+<div class="section">
+    <h2>Societies</h2>
+    <div class="groupCardContainer" id="societies"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+</div>
+
+<div class="section">
+    <h2>Committees</h2>
+    <div class="groupCardContainer" id="committees"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+</div>
+
+<script>
+    function createGroupCard(group) {
+        const card = document.createElement("div");
+        card.className = "groupCard";
+        let logoHTML = `<img src="https://placehold.co/400?text=${group.category}" alt="No Logo">`
+        if(group.avatar){logoHTML = `<img src="https://butler-jcr-public.s3.eu-west-2.amazonaws.com/societylogo/${group.id}.jpg">`}
+
+        const socials = [];
+
+        if(!!group.socials.instagram){
+            socials.push(`<a href="https://instagram.com/${group.socials.instagram}" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>`);
+        }
+        if(!!group.socials.whatsapp){
+            socials.push(`<a href="https://chat.whatsapp.com/${group.whatsapp}" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>`);
+        }
+
+        card.innerHTML = `
+        ${logoHTML}
+        <div class="groupCardBody">
+          <div class="groupName">${group.name}</div>
+        </div>
+        <div class="groupCardFooter">
+          <a href="/groups?id=${group.id}" class="groupView">View More</a>
+        </div>
+      `;
+        return card;
+    }
+
+    function renderGroups() {
+        document.getElementById("societies").innerHTML = "";
+        document.getElementById("committees").innerHTML = "";
+        document.getElementById("sports").innerHTML = "";
+
+        const search = document.getElementById("searchInput").value.toLowerCase();
+
+        for (const group of groups) {
+            if(!group.name.toLowerCase().includes(search)){continue};
+
+            const card = createGroupCard(group);
+            switch(group.category){
+                case "society":
+                    document.getElementById("societies").appendChild(card);
+                case "sport":
+                    document.getElementById("sports").appendChild(card);
+                case "committee":
+                    document.getElementById("committees").appendChild(card);
+                default:
+                    document.getElementById("societies").appendChild(card);
+            }
+        }
+    }
+
+    document.getElementById("searchInput").addEventListener("input", renderGroups);
+    
+    // imports
+    fetch("/groups?mode=list")
+        .then(res => res.json())
+        .then(data => {
+            groups = data;
+            renderGroups();
+        })
+        .catch(err => {
+            console.error("Failed to fetch groups:", err);
+        });
+</script>
