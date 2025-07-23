@@ -1,0 +1,27 @@
+{
+  "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.848.0",
+    "@aws-sdk/client-s3": "^3.850.0",
+    "@aws-sdk/client-ses": "^3.848.0",
+    "@aws-sdk/util-dynamodb": "^3.848.0",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0"
+  },
+  "name": "butlerjcr-intranet",
+  "version": "1.0.0",
+  "description": "This is the light-weight system, running on Amazon AWS (Lambda, API Gateway - serverless architecture) for the main public part of the Josephine Butler College JCR website.",
+  "main": "local.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/josephinebutlerjcr/intranet.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/josephinebutlerjcr/intranet/issues"
+  },
+  "homepage": "https://github.com/josephinebutlerjcr/intranet#readme"
+}

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="https://butler-jcr-public.s3.eu-west-2.amazonaws.com/assets/favicon.png">
+    <title>Login | Butler JCR</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        overflow: hidden;
+      }
+
+      .background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #682860;
+        background-image: url("https://butler-jcr-public.s3.eu-west-2.amazonaws.com/assets/background.jpg");
+        background-size: cover;
+        background-position: center 38%;
+        background-repeat: no-repeat;
+        z-index: -1;
+      }
+
+      .login-wrapper {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        max-width: 450px;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .login-wrapper h2 {
+        margin: 0 0 1.5rem;
+        text-align: center;
+        font-size: 1.5rem;
+        color: #000;
+      }
+
+      .login-wrapper input,
+      .login-wrapper button {
+        box-sizing: border-box;
+        width: 100%;
+        font-size: 1rem;
+        padding: 0.75rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+        border: 1px solid #ccc;
+      }
+
+      .login-wrapper button {
+        width: 100%;
+        padding: 0.75rem;
+        background-color: #682860;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .login-wrapper button:hover {
+        background-color: #341430;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="background"></div>
+    <div class="login-wrapper">
+      <form action="{{action}}" method="post"> <!--{{action}} is the action page-->
+        <h2>{{mainText}}</h2> <!--{{mainText}} could be a welcome message-->
+        <p style="text-align: center">{{sideText}}</p> <!-- {{sideText}} is anything else to add on -->
+        <input type="text" name="inputField" placeholder="{{inputPlaceholder}}" /> <!--{{inputPlaceholder}} is just a placeholder to prompt what we want. It will be associated with `inputField`-->
+        <input type="hidden" name="code" value="{{code}}" /> <!--{{code}} is just a value for anything else we want to pass -->
+        <button type="submit">{{continuationMessage}}</button> <!--{{continuationMessage}} is either continue or submit-->
+        <p style="text-align: justify; font-size: small">
+          <b>Legal.</b> Please visit <a href="https://www.butlerjcr.com/privacy" style="color: #341430;">our privacy policy</a>.
+          By logging in, you agree to these. All content is copyrighted - details
+          on who owns the copyright are noted on GitHub.
+          <br /><b>Remark.</b> Anyone with a
+          Durham University CIS account may sign in, but information will be restricted. Only
+          JCR members, and those in college families, have further data. If you
+          are an alumni, please contact us. Alumni can sign in with their old CIS
+          codes if they are registered to do so.
+        </p>
+      </form>
+    </div>
+  </body>
+</html>
