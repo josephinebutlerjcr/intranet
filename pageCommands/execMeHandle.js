@@ -77,6 +77,19 @@ module.exports = {
             }
         }
 
+        // name
+        let nameChange = false;
+        if(!!inputBody.name && inputBody.name != myFile.name){
+            if(/^(?=.{1,48}$)[\p{L}'-]+(?: [\p{L}'-]+)*$/u.test(inputBody.name) == false){
+                failure.push("Name invalid; 1 to 48 characters, permitted: A-Z a-z (with diacritics), -' and spaces only.");
+                update = false;
+            } else {
+                success.push(`Changed name from ${myFile.name} to ${inputBody.name}`)
+                nameChange = true;
+                myFile.name = inputBody.name;
+            }
+        }
+
         // makes updates
         if(success.length == 0){update = false;}
         if(update){
@@ -102,6 +115,19 @@ module.exports = {
             try {
                 await putS3Item(JSON.stringify(logBook),config.buckets.operational, `logs/exec/${cisToUse}.json`)
             } catch(err){}
+
+            if(nameChange){
+                if(verification.cis != cisToUse){
+                    let person = await getItem(config.tables.users, {cis: cisToUse});
+                    if(!person.error){
+                        person.name = inputBody.name;
+                        await putItem(config.tables.users, person)
+                    }
+                } else {
+                    verification.name = inputBody.name;
+                    await putItem(config.tables.users, verification);
+                }
+            }
         }
 
         // sends note

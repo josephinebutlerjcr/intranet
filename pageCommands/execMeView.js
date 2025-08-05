@@ -62,7 +62,10 @@ module.exports = {
         if(!myFile){
             content += `<p>No Record</p>`
         } else {
-            content += `<p style="text-align: justify;"><b>Bio</b><br>${md.render(myFile.bio || "").replace(/\n/g,"<br>").replace(/<p>/g,"").replace(/<\/p>/g,"")}<br><br><b>Avatar:</b></p>`
+            content += `<p style="text-align: justify;">
+            <b>Preferred Name</b><br>${myFile.name || ""}<br><br>
+            <b>Bio</b><br>${md.render(myFile.bio || "").replace(/\n/g,"<br>").replace(/<p>/g,"").replace(/<\/p>/g,"")}<br><br>
+            <b>Avatar:</b></p>`
             if(myFile.avatar){
                 content += `<img src="https://butler-jcr-public.s3.eu-west-2.amazonaws.com/avatars/${cisToUse}.jpg" width="250" height="250">`
             } else {
@@ -77,7 +80,10 @@ module.exports = {
         } else {
             content += `<p>Leave blank to not change what is currently available.</p>
             <form action="/exec/me" method="post">
-            <label id="desc">Bio (max 2048 characters - A-Z, a-z, 0-9, spaces, new lines and the following special symbols are permitted only: ()!'£?&.,-/@:[]) - links can be added using markdown.</label>
+            <label id="name">Preferred Name (max 48 characters - A-Z, a-z (and with diacritics), spaces, special symbols: -')
+            <input id="name" name="name" autocomplete="off" class="inputField" value="${myFile.name || ""}">
+
+            <label id="desc">Bio (max 2048 characters - A-Z, a-z, 0-9, spaces, new lines and the following special symbols are permitted only: ()!'£?&.,-/@:[] - links can be added using markdown.)</label>
             <textarea class="inputField" name="description" id="desc" autocomplete="off">${(myFile.bio || "")}</textarea>
 
             <label for="upload">Upload Avatar</label>
