@@ -44,7 +44,7 @@ module.exports = {
                         <option value="committee">Committee</option>
                     </select>
 
-                    <label id="desc">Description of Student Group (max 1024 characters)</label>
+                    <label id="desc">Description of Student Group (max 1024 characters, you are also allowed: / @ as symbols)</label>
                     <textarea class="inputField" name="description" id="desc" autocomplete="off" style="height: 80px;"></textarea>
 
                     <label for="upload">Upload Society Logo (optional)</label>

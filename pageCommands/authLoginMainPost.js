@@ -26,6 +26,12 @@ module.exports = {
         // user creation / whatever
         let user = await getItem(config.tables.users,{cis: cisCode});
         if(user.error == true){
+            let permitted = await validateButlerCIS(cisCode);
+            if(permitted == false){
+                event.error = "You are not a member of Josephine Butler College. If this is a mistake, please email us, and we can set you up with an account manually. By emailing us regarding this, you agree to the intranet privacy policy.";
+                return await loginPage.execute(event, verification);
+            }
+
             user = {
                 cis: cisCode,
                 generated: getTime(),
@@ -40,17 +46,8 @@ module.exports = {
                     attempts: 0,
                     attemptsOnCode: 0
                 },
-                privelege: "general",
+                privilege: "general",
                 membership: "N/R"
-            }
-        }
-
-        // if new user, checks if they are valid
-        if(user.error){
-            let permitted = await validateButlerCIS(cisCode);
-            if(permitted == false){
-                event.error = "You are not a member of Josephine Butler College. If this is a mistake, please email us, and we can set you up with an account manually. By emailing us regarding this, you agree to the intranet privacy policy.";
-                return await loginPage.execute(event, verification);
             }
         }
 

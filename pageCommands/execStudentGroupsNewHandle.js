@@ -80,8 +80,8 @@ module.exports = {
 
         // description
         if(!!inputBody.description && inputBody.description != society.description){
-            if(/^[A-Za-z0-9 !'£?&.,\-\n]{1,1024}$/.test(inputBody.description) == false){
-                failure.push("Society description invalid; 1 to 1024 characters, permitted: A-Z a-z 0-9 ()!'£?&.,- and spaces / new lines only.");
+            if(/^[A-Za-z0-9 !'£?&.,\-\n\/@]{1,1024}$/.test(inputBody.description) == false){
+                failure.push("Society description invalid; 1 to 1024 characters, permitted: A-Z a-z 0-9 ()!'£?&.,-/@ and spaces / new lines only.");
                 update = false;
             } else {
                 success.push(`Successfully changed society description from "${society.description}" to "${inputBody.description}"`);

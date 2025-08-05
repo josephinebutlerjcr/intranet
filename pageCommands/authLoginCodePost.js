@@ -69,7 +69,7 @@ module.exports = {
 
         // generate a token
         user.token = {
-            exp: getTime() + 28*24*60*60,
+            exp: getTime() + 26*7*24*60*60,
             key: generateToken()
         }
 
@@ -83,7 +83,7 @@ module.exports = {
 
         // send with cookie
         const dateNow = new Date();
-        const expiry = new Date(dateNow.getTime() + 28*24*60*60*1000);
+        const expiry = new Date(dateNow.getTime() + 26*7*24*60*60*1000);
         resp.headers["Set-Cookie"] = `token=${user.cis}-${user.token.key};expires=${expiry};Path=/;Secure;`
         return resp;
     }
