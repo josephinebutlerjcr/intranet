@@ -8,8 +8,8 @@
 | /auth/login/continue      | POST      | Login: OTP Handler and Final      | Unauth.       | X |
 | General |
 | /                         | GET       | Dashboard                         | General       | X |
-| /groups                   | GET       | View Student Groups               | General       | |
-| /people                   | GET       | Whose Who of Exec                 | General       | |
+| /groups                   | GET       | View Student Groups               | General       | X |
+| /people                   | GET       | Whose Who of Exec                 | General       | X |
 | /family                   | GET       | College Family Basics             | General/Fmly  | |
 | /family/tree              | GET       | College Family Tree               | Families      | |
 | /account                  | GET       | Membership Registry               | General       | |
@@ -25,8 +25,8 @@
 | /exec/groups/new          | POST      | Handles new group registration    | Exec          | X |
 | /exec/groups/edit         | GET       | Edits a existing student group    | Exec          | X |
 | /exec/groups/edit         | POST      | Handles edit to a group           | Exec          | X |
-| /exec/me                  | GET       | Edits own profile**               | Exec          | |
-| /exec/me                  | POST      | Edits own profile handle**        | Exec          | |
+| /exec/me                  | GET       | Edits own profile**               | Exec          | X |
+| /exec/me                  | POST      | Edits own profile handle**        | Exec          | X |
 | Chair and Vice Chair |
 | /democracy/new            | GET       | New minutes: upload               | Chair         | |
 | /democracy/new            | POST      | New minutes: upload handle        | Chair         | |

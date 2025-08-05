@@ -10,15 +10,39 @@ module.exports = {
     name: "POST/exec/me",
     description: "Exec's Self-Service Handler",
     execute: async(event, verification) => {
-        // user access levels
-        if(["chair","admin","exec"].includes(verification.privilege) == false){
-            const forbiddenPage = require("./error403");
-            return await forbiddenPage.execute(event,verification)
+        const inputBody = await parseBody(event.body);
+
+        // checks ranks and permissions
+        let biographies = {}; let ranks = {};
+        try {
+            biographies = await getS3Item(config.buckets.operational, `executive/biographies.json`);
+            biographies = JSON.parse(biographies)
+            ranks = await getS3Item(config.buckets.operational, `executive/roles.json`);
+            ranks = JSON.parse(ranks)
+        } catch(err) {
+            const dashboard = require("./dashboard");
+            return await dashboard.execute(event,verification)
         }
 
-        // body
-        const inputBody = await parseBody(event.body);
-        const viewPage = require("./execMeView");
+        // considers which CIS to use
+        let cisToUse = verification.cis;
+        if(verification.privilege == "admin" && !!inputBody.cis && /^[a-z]{4}[0-9]{2}$/.test(inputBody.cis)){
+            cisToUse = inputBody.cis
+        }
+
+        // allow edit?
+        let edit = true;
+        /*if(ranks.webBioPermit.includes(cisToUse) == false){
+            edit = false;
+        }*/ // removed this logic - literally only applies to webmaster
+
+        if(edit == false){
+            const dashboard = require("./dashboard");
+            return await dashboard.execute(event,verification)
+        }
+
+        // retrieves individual file
+        let myFile = biographies[cisToUse] || {bio:"",avatar:""};
 
         // now goes through each item
         let success = [];
@@ -26,24 +50,13 @@ module.exports = {
         let update = true; // turns false for non-condoned errors. condoned errors, e.g. avatar, will simply not get changed.
 
         // description (bio)
-        if(!!inputBody.description && inputBody.description != society.description){
-            if(/^[A-Za-z0-9 !'£?&.,()\-\n]{1,2048}$/.test(inputBody.description) == false){
-                failure.push("Society description invalid; 1 to 2048 characters, permitted: A-Z a-z 0-9 ()!'£?&.,- and spaces / new lines only.");
+        if(!!inputBody.description && inputBody.description != myFile.bio){
+            if(/^[A-Za-z0-9 !'£?&.,()\-\n\/@:[\]]{1,2048}$/.test(inputBody.description) == false){
+                failure.push("Bio invalid; 1 to 2048 characters, permitted: A-Z a-z 0-9 ()!'£?&.,-/@:[] and spaces / new lines only.");
                 update = false;
             } else {
-                success.push(`Successfully bio from "${society.description}" to "${inputBody.description}"`);
-                society.description = inputBody.description;
-            }
-        }
-
-        // category
-        if(!!inputBody.category && inputBody.category != society.category){
-            if(["society","sport","committee"].includes(inputBody.category) == false){
-                failure.push("Society category invalid; only permitted: society, sport, committee");
-                update = false;
-            } else {
-                success.push(`Successfully changed society category from "${society.category}" to "${inputBody.category}"`);
-                society.category = inputBody.category;
+                success.push(`Successfully changed bio from "${myFile.bio}" to "${inputBody.description}"`);
+                myFile.bio = inputBody.description;
             }
         }
 
@@ -58,175 +71,50 @@ module.exports = {
                     failure.push("Could not update avatar: size above 250 KB");
                 } else {
                     success.push("Updated Avatar")
-                    society.avatar = true;
-                    await uploadImageJpeg(config.buckets.content, `societylogo/${society.id}.jpg`, base64String);
+                    myFile.avatar = true;
+                    await uploadImageJpeg(config.buckets.content, `avatars/${cisToUse}.jpg`, base64String);
                 }
-            }
-        }
-
-        // people: president
-        if(!!inputBody.president && inputBody.president != society.admins.president.join(",")){
-            let tmpPresidents = inputBody.president.split(",");
-            let allowPresident = true;
-            if(/^[a-zA-Z]{4}\d{2}$/.test(tmpPresidents[0]) == false || tmpPresidents[0] == "abcd12"){
-                failure.push("President invalid; invalid CIS code for first person");
-                update = false;
-                allowPresident = false;
-            }
-            if(!!tmpPresidents[1]){
-                if(/^[a-zA-Z]{4}\d{2}$/.test(tmpPresidents[1]) == false || tmpPresidents[1] == "abcd12"){
-                    failure.push("President invalid; invalid CIS code for second person - they have been removed otherwise");
-                    tmpPresidents = [tmpPresidents[0]];
-                }
-            }
-            if(allowPresident){
-                success.push(`Changed president(s) from ${society.admins.president.join(",")} to ${tmpPresidents.join(",")}`)
-                society.admins.president = tmpPresidents;
-            }
-        }
-
-        // people: vicepresident, treasurer, socialsec
-        let joinedVp = ""; if(!!society.admins.vicepresident){joinedVp = society.admins.vicepresident.join(",")}
-        let joinedTr = ""; if(!!society.admins.treasurer){joinedTr = society.admins.treasurer.join(",")}
-        let joinedSS = ""; if(!!society.admins.socialsec){joinedSS = society.admins.socialsec.join(",")}
-
-        if(!!inputBody.vicepresident && inputBody.vicepresident != joinedVp){
-            let tmp = inputBody.vicepresident.split(",");
-            let allow = true;
-            if(/^[a-zA-Z]{4}\d{2}$/.test(tmp[0]) == false){
-                failure.push("Vice President invalid; invalid CIS code for first person");
-                update = false;
-                allow = false;
-            } else if(tmp[0] == "abcd12") {
-                success.push("Removed vice president(s)");
-                tmp = [];
-            } else if(!!tmp[1]){
-                if(/^[a-zA-Z]{4}\d{2}$/.test(tmp[1]) == false || tmp[1] == "abcd12"){
-                    failure.push("Vice president invalid; invalid CIS code for second person - they have been removed otherwise");
-                    tmp = [tmp[0]];
-                }
-            }
-            if(allow){
-                success.push(`Changed VP(s) from ${joinedVp} to ${tmp.join(",") || ""}`)
-                society.admins.vicepresident = tmp;
-            }
-        }
-        if(!!inputBody.treasurer && inputBody.treasurer != joinedTr){
-            let tmp = inputBody.treasurer.split(",");
-            let allow = true;
-            if(/^[a-zA-Z]{4}\d{2}$/.test(tmp[0]) == false){
-                failure.push("Treasurer invalid; invalid CIS code for first person");
-                update = false;
-                allow = false;
-            } else if(tmp[0] == "abcd12") {
-                success.push("Removed treasurer(s)");
-                tmp = [];
-            } else if(!!tmp[1]){
-                if(/^[a-zA-Z]{4}\d{2}$/.test(tmp[1]) == false || tmp[1] == "abcd12"){
-                    failure.push("Treasurer invalid; invalid CIS code for second person - they have been removed otherwise");
-                    tmp = [tmp[0]];
-                }
-            }
-            if(allow){
-                success.push(`Changed treasurer(s) from ${joinedTr} to ${tmp.join(",") || ""}`)
-                society.admins.treasurer = tmp;
-            }
-        }
-        if(!!inputBody.socialsec && inputBody.socialsec != joinedSS){
-            let tmp = inputBody.socialsec.split(",");
-            let allow = true;
-            if(/^[a-zA-Z]{4}\d{2}$/.test(tmp[0]) == false){
-                failure.push("Social secretary invalid; invalid CIS code for first person");
-                update = false;
-                allow = false;
-            } else if(tmp[0] == "abcd12") {
-                success.push("Removed social secretar(y/ies)");
-                tmp = [];
-            } else if(!!tmp[1]){
-                if(/^[a-zA-Z]{4}\d{2}$/.test(tmp[1]) == false || tmp[1] == "abcd12"){
-                    failure.push("Social secretary invalid; invalid CIS code for second person - they have been removed otherwise");
-                    tmp = [tmp[0]];
-                }
-            }
-            if(allow){
-                success.push(`Changed social sec(s) from ${joinedSS} to ${tmp.join(",") || ""}`)
-                society.admins.socialsec = tmp;
-            }
-        }
-
-        // social medias
-        if(!society.socials){society.socials = {}};
-        if(!!inputBody.instagram && !!society.socials.instagram && society.socials.instagram != inputBody.instagram){
-            if(/^[\w](?!.*?\.{2})[\w.]{1,28}[\w]$/.test(inputBody.instagram) == false){
-                failure.push("Invalid instagram handle given");
-                update = false;
-            } else {
-                success.push(`Successfully changed Instagram Handle from "${society.socials.instagram}" to "${inputBody.instagram}"`);
-                society.socials.instagram = inputBody.instagram;
-            }
-        }
-        if(!!inputBody.whatsapp && !!society.socials.whatsapp && society.socials.whatsapp != inputBody.whatsapp.replace(/https:\/\/chat\.whatsapp\.com\//g, "")){
-            let whatsappCode = inputBody.whatsapp.replace(/https:\/\/chat\.whatsapp\.com\//g, "");
-            if(/^[a-zA-Z0-9]{22}$/g.test(whatsappCode) == false){
-                failure.push("Invalid WhatsApp chat link given");
-                update = false;
-            } else {
-                success.push(`Successfully changed WhatsApp Chat Link from "https://chat.whatsapp.com/${society.socials.whatsapp}" to "https://chat.whatsapp.com/${inputBody.whatsapp}"`);
-                society.socials.whatsapp = inputBody.whatsapp;
-            }
-        }
-
-        // awards NOT AVAILABLE IN NEW
-        if(!!inputBody.awards && inputBody.awards != society.awards.join("\n")){
-            let awards = inputBody.awards.split("\n");
-            let awardsFailed = false;
-            for(let award of awards){
-                if(/^[A-Za-z0-9 !'£?&.,()\-]{1,32}$/.test(award) == false){
-                    awardsFailed = true;
-                }
-            }
-
-            if(awardsFailed){
-                failure.push("Society awards invalid; 1 to 32 characters per line, permitted: A-Z a-z 0-9 ()!'£?&.,- and spaces only.");
-                update = false;
-            } else if(awards.length > 10){
-                failure.push("Society awards invalid; Maximum 10 awards allowed.");
-                update = false;
-            } else {
-                success.push("Amended society's awards");
-                society.awards = awards;
             }
         }
 
         // makes updates
         if(success.length == 0){update = false;}
         if(update){
-            await putItem(config.tables.groups, society);
+            // updates bio files
+            biographies = await getS3Item(config.buckets.operational, `executive/biographies.json`);
+            biographies = JSON.parse(biographies)
+            biographies[cisToUse] = myFile;
+            await putS3Item(JSON.stringify(biographies), config.buckets.operational, `executive/biographies.json`)
 
             // logbook changes
             let logBook = []
             try {
-                logBook = await getS3Item(config.buckets.operational,`logs/groups/${society.id}.json`)
+                logBook = await getS3Item(config.buckets.operational,`logs/exec/${cisToUse}.json`)
                 logBook = JSON.parse(logBook);
-            } catch(err){}
+            } catch(err){
+                logBook = [];
+            }
             logBook.push({
                 time: getTime(),
                 person: verification.cis,
                 notes:success
             })
             try {
-                await putS3Item(JSON.stringify(logBook),config.buckets.operational, `logs/groups/${society.id}.json`)
+                await putS3Item(JSON.stringify(logBook),config.buckets.operational, `logs/exec/${cisToUse}.json`)
             } catch(err){}
         }
 
         // sends note
         const processNote = require("./processNotice");
-        event.processName = "Edit a Student Group";
+        event.processName = "Edit a Person";
         event.processRemarks = `<b>Successes:</b><br>${success.join("<br>")} <br><br> <b>Failures:</b><br>${failure.join("<br>")}<br><br>`;
         if(update){
             event.processRemarks += `<b>Changes have been made</b>`;
             event.allowBack = false;
-            event.otherLink = `/exec/groups?id=${society.id}`
+            event.otherLink = `/exec/me`
+            if(verification.cis != cisToUse){
+                event.otherLink = `/exec/me?id=${cisToUse}`
+            }
         } else {
             event.processRemarks += `<b>NO CHANGES HAVE BEEN MADE</b>`;
             event.allowBack = true;
