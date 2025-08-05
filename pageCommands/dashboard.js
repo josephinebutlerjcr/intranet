@@ -61,7 +61,7 @@ module.exports = {
         `<p>
             This useful website contains all the information you may need to access as a current member of the college, or an alumni. 
             <br>It is recommended you bookmark this page.
-            <br>Once you log in, you will stay logged in for 28 days, unless you log out, or sign in from another device.
+            <br>Once you log in, you will stay logged in for 26 weeks, unless you log out, or sign in from another device.
         </p>
         <br>
         <div class="grid-section">

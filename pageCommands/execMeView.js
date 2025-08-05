@@ -78,10 +78,11 @@ module.exports = {
         if(edit == false){
             content += `<p>You are not eligible to edit any details, as your photo / bio is not displayed to anyone</p>`
         } else {
+            if(!myFile){myFile = {}}
             content += `<p>Leave blank to not change what is currently available.</p>
             <form action="/exec/me" method="post">
             <label id="name">Preferred Name (max 48 characters - A-Z, a-z (and with diacritics), spaces, special symbols: -')
-            <input id="name" name="name" autocomplete="off" class="inputField" value="${myFile.name || ""}">
+            <input id="name" name="name" autocomplete="off" class="inputField" value="${(myFile.name || "")}">
 
             <label id="desc">Bio (max 2048 characters - A-Z, a-z, 0-9, spaces, new lines and the following special symbols are permitted only: ()!'£?&.,-/@:[] - links can be added using markdown.)</label>
             <textarea class="inputField" name="description" id="desc" autocomplete="off">${(myFile.bio || "")}</textarea>
