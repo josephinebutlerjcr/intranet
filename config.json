@@ -8,5 +8,8 @@
     "buckets":{
         "content":"butler-jcr-public",
         "operational":"butler-jcr"
+    },
+    "operationalLocations":{
+        "collegeMembersHashedCisCodes":"hashed_db.txt"
     }
 }

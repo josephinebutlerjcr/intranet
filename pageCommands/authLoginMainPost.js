@@ -1,6 +1,7 @@
 const { parseBody, getTime } = require("../auxilliaryFunctions/formatting")
 const { sendEmail } = require("../auxilliaryFunctions/email")
 const { getItem, putItem } = require("../auxilliaryFunctions/dynamodb")
+const { validateButlerCIS } = require("../auxilliaryFunctions/collegeCheck")
 const config = require("../config.json")
 const fs = require("fs");
 
@@ -41,6 +42,15 @@ module.exports = {
                 },
                 privelege: "general",
                 membership: "N/R"
+            }
+        }
+
+        // if new user, checks if they are valid
+        if(user.error){
+            let permitted = await validateButlerCIS(cisCode);
+            if(permitted == false){
+                event.error = "You are not a member of Josephine Butler College. If this is a mistake, please email us, and we can set you up with an account manually. By emailing us regarding this, you agree to the intranet privacy policy.";
+                return await loginPage.execute(event, verification);
             }
         }
 
