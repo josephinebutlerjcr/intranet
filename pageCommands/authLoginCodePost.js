@@ -1,6 +1,7 @@
 const { parseBody, getTime, generateToken } = require("../auxilliaryFunctions/formatting")
 const { getItem, putItem } = require("../auxilliaryFunctions/dynamodb")
 const config = require("../config.json")
+const fs = require("fs");
 
 module.exports = {
     name: "POST/auth/login/continue",
@@ -67,6 +68,13 @@ module.exports = {
             attemptsOnCode: 0
         }
 
+        // new user check
+        let newUser = false;
+        if(user.newUser){
+            newUser = true;
+            delete user.newUser
+        }
+
         // generate a token
         user.token = {
             exp: getTime() + 26*7*24*60*60,
@@ -80,6 +88,11 @@ module.exports = {
         const dashboard = require("./dashboard")
         let resp = await dashboard.execute(event, user);
         resp.body = resp.body.replace(/{{cisCode}}/g, user.cis);
+
+        // Override: new user, ask for name
+        if(newUser){
+            resp.body = fs.readFileSync("./assets/html/newLoginsPage.html").toString()
+        }
 
         // send with cookie
         const dateNow = new Date();

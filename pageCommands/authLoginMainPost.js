@@ -47,7 +47,8 @@ module.exports = {
                     attemptsOnCode: 0
                 },
                 privilege: "general",
-                membership: "N/R"
+                membership: "N/R",
+                newUser: true
             }
         }
 

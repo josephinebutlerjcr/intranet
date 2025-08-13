@@ -31,10 +31,10 @@ module.exports = {
 
         // user access levels
         const societyPeople = Object.values(society.admins).flat();
-        let editPrivelege = "full"
+        let editPrivilege = "full"
         if(["chair","admin","exec"].includes(verification.privilege) == false){
             if(societyPeople.includes(verification.cis)){
-                editPrivelege = "limit"
+                editPrivilege = "limit"
             } else {
                 const forbiddenPage = require("./error403");
                 return await forbiddenPage.execute(event,verification)
@@ -209,7 +209,7 @@ module.exports = {
         }
 
         // awards NOT AVAILABLE IN NEW - ONLY FOR FULL PRIVELEGE
-        if(editPrivelege == "full"){
+        if(editPrivilege == "full"){
             if(!!inputBody.awards && inputBody.awards != society.awards.join("\n")){
                 let awards = inputBody.awards.split("\n");
                 let awardsFailed = false;
@@ -234,7 +234,7 @@ module.exports = {
 
         // deletion - ONLY FOR FULL PRIVELEGE
         let deleteSoc = false;
-        if(editPrivelege == "full"){
+        if(editPrivilege == "full"){
             if(!!inputBody.delete && inputBody.delete.trim() == society.id){
                 deleteSoc = true;
                 success = ["Deleted Society"];
@@ -279,6 +279,8 @@ module.exports = {
             event.otherLink = `/exec/groups?id=${society.id}`
             if(deleteSoc){
                 event.otherLink = `/exec/groups`
+            } else if(editPrivilege == "limit"){
+                event.otherLink = `/groups?id=${society.id}`
             }
         } else {
             event.processRemarks += `<b>No changes have been made</b>`;
