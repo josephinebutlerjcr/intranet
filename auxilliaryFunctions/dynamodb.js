@@ -1,10 +1,10 @@
 // export
 module.exports = {
-    getItem,putItem,scanItems
+    getItem,putItem,scanItems,deleteItem
 };
 
 //premble
-const { DynamoDBClient, GetItemCommand, PutItemCommand, ScanCommand  } = require("@aws-sdk/client-dynamodb");
+const { DynamoDBClient, GetItemCommand, PutItemCommand, ScanCommand, DeleteItemCommand } = require("@aws-sdk/client-dynamodb");
 const { marshall, unmarshall } = require("@aws-sdk/util-dynamodb");
 
 // stuff
@@ -95,5 +95,19 @@ async function scanItems(table,filterExp,expressionVals,expressionNames){
         return []
     } else {
         return itemsRtn
+    }
+}
+
+async function deleteItem(table, key) {
+    const dynamoDBClient = new DynamoDBClient();
+    try {
+        const command = new DeleteItemCommand({
+            TableName: table,
+            Key: marshall(key),
+        });
+        await dynamoDBClient.send(command);
+    } catch (error) {
+        console.error("Error deleting item:", error);
+        throw error;
     }
 }

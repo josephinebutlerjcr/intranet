@@ -1,6 +1,6 @@
 const fs = require("fs");
 const config = require("../config.json")
-const { getItem, putItem } = require("../auxilliaryFunctions/dynamodb")
+const { getItem, putItem, deleteItem } = require("../auxilliaryFunctions/dynamodb")
 const { uploadImageJpeg, getS3Item, putS3Item } = require("../auxilliaryFunctions/s3")
 const { parseBody, getTime } = require("../auxilliaryFunctions/formatting")
 
@@ -10,11 +10,6 @@ module.exports = {
     name: "POST/exec/groups/edit",
     description: "Exec's Student Groups Edit Portal HANDLER",
     execute: async(event, verification) => {
-        // user access levels
-        if(["chair","admin","exec"].includes(verification.privilege) == false){
-            const forbiddenPage = require("./error403");
-            return await forbiddenPage.execute(event,verification)
-        }
 
         // body
         const inputBody = await parseBody(event.body);
@@ -32,6 +27,18 @@ module.exports = {
         if(society.error || society.id != inputBody.id){
             event.error = "Society does not exist"
             return await viewPage.execute(event, verification);
+        }
+
+        // user access levels
+        const societyPeople = Object.values(society.admins).flat();
+        let editPrivelege = "full"
+        if(["chair","admin","exec"].includes(verification.privilege) == false){
+            if(societyPeople.includes(verification.cis)){
+                editPrivelege = "limit"
+            } else {
+                const forbiddenPage = require("./error403");
+                return await forbiddenPage.execute(event,verification)
+            }
         }
 
         // now goes through each item
@@ -201,34 +208,50 @@ module.exports = {
             }
         }
 
-        // awards NOT AVAILABLE IN NEW
-        if(!!inputBody.awards && inputBody.awards != society.awards.join("\n")){
-            let awards = inputBody.awards.split("\n");
-            let awardsFailed = false;
-            for(let award of awards){
-                if(/^[A-Za-z0-9 !'£?&.,()\-]{1,32}$/.test(award) == false){
-                    awardsFailed = true;
+        // awards NOT AVAILABLE IN NEW - ONLY FOR FULL PRIVELEGE
+        if(editPrivelege == "full"){
+            if(!!inputBody.awards && inputBody.awards != society.awards.join("\n")){
+                let awards = inputBody.awards.split("\n");
+                let awardsFailed = false;
+                for(let award of awards){
+                    if(/^[A-Za-z0-9 !'£?&.,()\-]{1,32}$/.test(award) == false){
+                        awardsFailed = true;
+                    }
+                }
+
+                if(awardsFailed){
+                    failure.push("Society awards invalid; 1 to 32 characters per line, permitted: A-Z a-z 0-9 ()!'£?&.,- and spaces only.");
+                    update = false;
+                } else if(awards.length > 10){
+                    failure.push("Society awards invalid; Maximum 10 awards allowed.");
+                    update = false;
+                } else {
+                    success.push("Amended society's awards");
+                    society.awards = awards;
                 }
             }
+        }
 
-            if(awardsFailed){
-                failure.push("Society awards invalid; 1 to 32 characters per line, permitted: A-Z a-z 0-9 ()!'£?&.,- and spaces only.");
-                update = false;
-            } else if(awards.length > 10){
-                failure.push("Society awards invalid; Maximum 10 awards allowed.");
-                update = false;
-            } else {
-                success.push("Amended society's awards");
-                society.awards = awards;
+        // deletion - ONLY FOR FULL PRIVELEGE
+        let deleteSoc = false;
+        if(editPrivelege == "full"){
+            if(!!inputBody.delete && inputBody.delete.trim() == society.id){
+                deleteSoc = true;
+                success = ["Deleted Society"];
+                failure = [];
             }
         }
 
         // makes updates
         if(success.length == 0){update = false;}
-        if(update){
+        if(deleteSoc){
+            await deleteItem(config.tables.groups, {id: society.id});
+        } else if(update){
             await putItem(config.tables.groups, society);
+        }
 
-            // logbook changes
+        // logbook
+        if(deleteSoc || update){
             let logBook = []
             try {
                 logBook = await getS3Item(config.buckets.operational,`logs/groups/${society.id}.json`)
@@ -250,12 +273,15 @@ module.exports = {
         const processNote = require("./processNotice");
         event.processName = "Edit a Student Group";
         event.processRemarks = `<b>Successes:</b><br>${success.join("<br>")} <br><br> <b>Failures:</b><br>${failure.join("<br>")}<br><br>`;
-        if(update){
+        if(update || deleteSoc){
             event.processRemarks += `<b>Changes have been made</b>`;
             event.allowBack = false;
             event.otherLink = `/exec/groups?id=${society.id}`
+            if(deleteSoc){
+                event.otherLink = `/exec/groups`
+            }
         } else {
-            event.processRemarks += `<b>NO CHANGES HAVE BEEN MADE</b>`;
+            event.processRemarks += `<b>No changes have been made</b>`;
             event.allowBack = true;
         }
         return await processNote.execute(event,verification)

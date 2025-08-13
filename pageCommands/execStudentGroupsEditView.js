@@ -7,12 +7,6 @@ module.exports = {
     name: "GET/exec/groups/edit",
     description: "Exec's Student Groups Edit Portal",
     execute: async(event, verification) => {
-        // user access levels
-        if(["chair","admin","exec"].includes(verification.privilege) == false){
-            const forbiddenPage = require("./error403");
-            return await forbiddenPage.execute(event,verification)
-        }
-
         // check error prompts
         let errorPrompts = "";
         if(!!event.error){
@@ -49,6 +43,20 @@ module.exports = {
         society.admins.socialsec = society.admins.socialsec || [];
         society.awards = society.awards || [];
 
+        // shows deletion and awards panel
+        let deletionPanel = ""; let awards = ""
+        if(["chair","admin","exec"].includes(verification.privilege)){
+            deletionPanel = `<h3>Delete Society</h3><label id="delete">Type '${society.id}' below to delete this society</label><input type="text" class="inputField" name="delete" id="delete" autocomplete="off">`;
+            awards = `<label id="awards">Society's Awards (one line = one award, maximum 10 awards, each line follows the above rules)</label><textarea class="inputField" name="awards" id="awards" autocomplete="off" style="height: 80px;">${society.awards.join("\n")}</textarea>`
+        }
+
+        // access levels (left late as we test for the people of the society too)
+        const societyPeople = Object.values(society.admins).flat();
+        if(["chair","admin","exec"].includes(verification.privilege) == false && societyPeople.includes(verification.cis) == false){
+            const forbiddenPage = require("./error403");
+            return await forbiddenPage.execute(event,verification)
+        }
+
         // content
         let content = 
         `<button class="redirect-button" onclick="location.href='/'">Back to Dashboard</button> |
@@ -82,8 +90,7 @@ module.exports = {
                     <label for="upload">Upload Society Logo (optional)</label>
                     ${fs.readFileSync("./assets/elements/squareUpload.html").toString()}
 
-                    <label id="awards">Society's Awards (one line = one award, maximum 10 awards, each line follows the above rules)</label>
-                    <textarea class="inputField" name="awards" id="awards" autocomplete="off" style="height: 80px;">${society.awards.join("\n")}</textarea>
+                    ${awards}
 
                     <h3>People</h3>
 
@@ -116,6 +123,8 @@ module.exports = {
                     <label id="facebook">Facebook Link (optional; valid group chat / page link)</label>
                     <input type="url" class="inputField" name="facebook" id="facebook" value="${society.socials.facebook}" autocomplete="off" pattern="https:\/\/(www\\.)?facebook\\.com\\/(groups\\/[a-zA-Z0-9.\-_]+\\/?|[a-zA-Z0-9.\-_]+\\/?|profile\\.php\\?id=\\d+)">
                     --->
+
+                    ${deletionPanel}
 
                     <input type="hidden" name="id" value="${society.id}" autocomplete="off">
                     <input type="submit" class="inputSubmit" value="Submit Changes">
