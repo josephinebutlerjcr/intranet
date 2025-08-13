@@ -51,7 +51,7 @@ module.exports = {
             // logbook
             let logBook = []
             try {
-                logBook = await getS3Item(config.buckets.operational,`logs/person/${verification.cis}.json`)
+                logBook = await getS3Item(config.buckets.operational,`logs/exec/${verification.cis}.json`)
                 logBook = JSON.parse(logBook);
             } catch(err){
                 logBook = [];
@@ -62,7 +62,7 @@ module.exports = {
                 notes:success
             })
             try {
-                await putS3Item(JSON.stringify(logBook),config.buckets.operational, `logs/person/${verification.cis}.json`)
+                await putS3Item(JSON.stringify(logBook),config.buckets.operational, `logs/exec/${verification.cis}.json`)
             } catch(err){}
         }
 

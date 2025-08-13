@@ -154,6 +154,6 @@ async function societiesList(){
 
 // main preview
 async function mainPreview(){
-    let element = fs.readFileSync("./assets/elements/groupDirectory.html").toString();
+    let element = `<button class="redirect-button" onclick="location.href='/'">Back to Dashboard</button><br>` + fs.readFileSync("./assets/elements/groupDirectory.html").toString();
     return element;
 }

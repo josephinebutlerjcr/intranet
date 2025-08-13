@@ -19,7 +19,7 @@ module.exports = {
             ranks = JSON.parse(ranks)
         } catch(err) {biographies = {}; ranks = {main:{},extra:{},emailOverrides:{}}};
 
-        let content = `<div class="groupCardContainer" id="exec">`
+        let content = `<button class="redirect-button" onclick="location.href='/'">Back to Dashboard</button><div class="groupCardContainer" id="exec">`
 
             // goes through exec: main
             let execMainRoles = Object.keys(ranks.main);
