@@ -97,8 +97,9 @@ async function individualSociety(society, verification){
     }
 
     // edit rights
-    let editButton = ""
-    if(["chair","admin","exec"].includes(verification.privilege)){
+    let editButton = "";
+    const societyPeople = Object.values(society.admins).flat();
+    if(["chair","admin","exec"].includes(verification.privilege) || societyPeople.includes(verification.cis)){
         editButton = ` | <button class="redirect-button" onclick="location.href='/exec/groups/edit?id=${society.id}'">Edit Society</button>`
     }
 

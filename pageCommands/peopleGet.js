@@ -23,12 +23,14 @@ module.exports = {
 
             // goes through exec: main
             let execMainRoles = Object.keys(ranks.main);
+            for(let extraRole of Object.keys(ranks.extra)){
+              execMainRoles.push(extraRole)
+            }
             for(let role of execMainRoles){
-
                 if(role.includes("Webmaster")){continue;} // Webmaster is not an exec role
 
                 // gathers cis - exempts if no cis
-                let roleCis = ranks.main[role];
+                let roleCis = ranks.main[role] || ranks.extra[role];
                 if(!roleCis){continue;}
 
                 // bios and stuff
@@ -41,7 +43,7 @@ module.exports = {
                 // gives edit option to admins or self
                 let editOption = "";
                 if(verification.cis == roleCis){
-                  editOption = `<a href="/exec/me">Edit Me</a>`
+                  editOption = ` | <a href="/exec/me">Edit Me</a>`
                 } else if(verification.privilege == "admin"){
                   editOption = ` | <a href="/exec/me?id=${roleCis}">Edit Person</a>`
                 }
