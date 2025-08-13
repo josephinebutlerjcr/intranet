@@ -19,7 +19,7 @@ module.exports = {
                 if((tmpSoc.error || tmpSoc.id != groupId) == false){
                     society = tmpSoc;
                 }
-                content = await individualSociety(society);
+                content = await individualSociety(society, verification);
             } 
             // or gets a list
             else if(!!event.queryStringParameters.mode){
@@ -59,7 +59,7 @@ module.exports = {
 }
 
 // individual view
-async function individualSociety(society){
+async function individualSociety(society, verification){
     let socials = ""; let exec = ""; let logo = `<img src="https://placehold.co/400?text=${society.category}" alt="No Logo">`; let societyAwards = "";
 
     // social medias
@@ -96,10 +96,17 @@ async function individualSociety(society){
         }
     }
 
+    // edit rights
+    let editButton = "";
+    const societyPeople = Object.values(society.admins).flat();
+    if(["chair","admin","exec"].includes(verification.privilege) || societyPeople.includes(verification.cis)){
+        editButton = ` | <button class="redirect-button" onclick="location.href='/exec/groups/edit?id=${society.id}'">Edit Society</button>`
+    }
+
     return  `
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
-<button class="redirect-button" onclick="history.back()">Go Back</button>
+<button class="redirect-button" onclick="history.back()">Go Back</button> ${editButton}
 
 <div class="groupSummary">
   <div class="logo">
@@ -147,6 +154,6 @@ async function societiesList(){
 
 // main preview
 async function mainPreview(){
-    let element = fs.readFileSync("./assets/elements/groupDirectory.html").toString();
+    let element = `<button class="redirect-button" onclick="location.href='/'">Back to Dashboard</button><br>` + fs.readFileSync("./assets/elements/groupDirectory.html").toString();
     return element;
 }

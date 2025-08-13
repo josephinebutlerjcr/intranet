@@ -11,31 +11,36 @@ module.exports = {
                 name: "Societies, Committees & Sports",
                 desc: "Want to see what college-based stuff already exists? Fear not, you can find out here. If you can't find a society you want, please feel free to contact the societies officer or the JCR president to see how you can start one!",
                 link: "/groups",
-                linkName: "Student Groups"
+                linkName: "Student Groups",
+                iconName:"fas fa-users"
             },
             {
                 name: "Whose Who?",
                 desc: "So many names and faces, it would certainly help to know who is on the JCR executive, or holds other roles representing you",
                 link: "/people",
-                linkName: "JCR Representatives"
+                linkName: "JCR Representatives",
+                iconName:"fas fa-id-badge"
             },
             {
                 name: "College Families",
                 desc: "Are you part of a college family and want to know about your college family? Fear not, you can find out here*",
                 link: "/family",
-                linkName: "College Families"
+                linkName: "College Families",
+                iconName:"fas fa-people-group"
             },
             {
                 name: "Member Registry",
                 desc: "Want to find out what information we hold about you on this portal?",
                 link: "/account",
-                linkName: "Registry"
+                linkName: "Registry",
+                iconName: "fas fa-address-book"
             },
             {
                 name: "Democracy",
                 desc: "All democracy-related articles, from JCR meeting minutes, to our standing orders.",
                 link: "/democracy",
-                linkName: "Democratic Services"
+                linkName: "Democratic Services",
+                iconName:"fas fa-scale-balanced"
             }
         ]
 
@@ -45,7 +50,8 @@ module.exports = {
                 name: "Exec's Portal",
                 desc: "<b>Exec / Admin Exclusive</b>: Societies Registration, Edit Personal Profile",
                 link: "/exec",
-                linkName: "Exec's Portal"
+                linkName: "Exec's Portal",
+                iconName: "fas fa-user-shield"
             })
         }
 
@@ -53,15 +59,15 @@ module.exports = {
         let panelsToHtml = "";
         for(var i = 0; i < panels.length; i++){
             let currentPanel = panels[i];
-            panelsToHtml += `<div class="card"><h3>${currentPanel.name}</h3><p>${currentPanel.desc}</p><a href="${currentPanel.link}">${currentPanel.linkName} →</a></div>`;
+            panelsToHtml += `<div class="card"><i class="${currentPanel.iconName}" style="font-size: 2.5rem; margin-bottom: 8px; color: #b1333a;"></i><h3>${currentPanel.name}</h3><p>${currentPanel.desc}</p><a href="${currentPanel.link}">${currentPanel.linkName} →</a></div>`;
         }
 
         // main content
         let content = 
-        `<p>
+        `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"><p>
             This useful website contains all the information you may need to access as a current member of the college, or an alumni. 
             <br>It is recommended you bookmark this page.
-            <br>Once you log in, you will stay logged in for 28 days, unless you log out, or sign in from another device.
+            <br>Once you log in, you will stay logged in for 26 weeks, unless you log out, or sign in from another device.
         </p>
         <br>
         <div class="grid-section">

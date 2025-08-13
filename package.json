@@ -4,7 +4,8 @@
     "@aws-sdk/client-s3": "^3.850.0",
     "@aws-sdk/client-ses": "^3.848.0",
     "@aws-sdk/util-dynamodb": "^3.848.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10"
   },
   "name": "butlerjcr-intranet",
   "version": "1.0.0",
