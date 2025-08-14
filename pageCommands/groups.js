@@ -77,11 +77,11 @@ async function individualSociety(society, verification){
             const person = await getItem(config.tables.users, {cis: personCIS});
             let cisDisplay = true;
             if(!person.name){cisDisplay = false}
-            let personName = person.name || "An Unknown Person";
+            let personName = person.name || "Name Not Available";
             if(cisDisplay){
                 exec += `${extraCo}${role}: ${personName} (<a href="mailto:${personCIS}@durham.ac.uk" target="_blank">${personCIS}</a>)<br>`;
             } else {
-                exec += `${extraCo}${role}: (Name Not On Display)<br>`;
+                exec += `${extraCo}${role}: Name Not On Display<br>`;
             }
         }
     }
@@ -119,7 +119,7 @@ async function individualSociety(society, verification){
       ${society.description}
     </div>
     <div class="description">
-    	<b>Executive of the Charity:</b><br>
+    	<b>Executive of the Group:</b><br>
         ${exec}
     </div>
     <div class="tags">
