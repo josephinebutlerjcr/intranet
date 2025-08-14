@@ -12,7 +12,7 @@ const express = require("express");
 const app = express();
 const port = 3000;
 require("dotenv").config();
-app.use(express.raw({ type: "*/*", limit: "2mb" }));
+app.use(express.text({ type: '*/*', defaultCharset: 'utf-8', limit: "2mb" }));
 
 // main sequence, translated for this use.
 app.use(async (req, res) => {
