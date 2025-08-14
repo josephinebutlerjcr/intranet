@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>TeX to Markdown Converter for Standing Orders</title>
+<style>
+  body { font-family: Verdana, Geneva, Tahoma, sans-serif; padding: 24px; max-width: 1000px; margin: auto; }
+  textarea { width: 100%; height: 360px; margin-bottom: 12px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
+  pre { background: #f7f7f8; padding: 12px; white-space: pre-wrap; border: 1px solid #eee; border-radius: 8px; min-height: 360px; }
+  button { padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; background: #fff; cursor: pointer; margin-right: 8px; }
+  button:hover { background: #f2f2f2; }
+  small { color: #666; }
+</style>
+</head>
+<body>
+
+<h1>TeX to Markdown Converter for Standing Orders</h1>
+<p><small>Input the text of the .tex file in `Contents` section <b>one at a time</b>, and then copy & paste the markdown into the standing orders section. Do remember a header at the top to say standing orders, and the date of the standing orders. <b>Designed specifically for Josephine Butler JCR Standing Orders</b>, assuming the basic structure of the document has not changed since Easter 2025.<br><br>Apart from debugging, this tool was made by ChatGPT - the need for this tool is because pandoc can not put the original into a html or md, as it is structurally complicated.</small></p>
+
+<textarea id="texInput" placeholder="Paste your TeX here..."></textarea>
+<div>
+  <button id="convertBtn">Convert</button>
+  <button id="copyBtn">Copy Markdown</button>
+  <button id="downloadBtn">Download .md</button>
+</div>
+
+<h2>Markdown Output</h2>
+<pre id="mdOutput"></pre>
+
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const inputEl = $('#texInput');
+  const outEl = $('#mdOutput');
+
+  $('#convertBtn').addEventListener('click', () => outEl.textContent = texToMarkdown(inputEl.value || ''));
+  $('#copyBtn').addEventListener('click', () => navigator.clipboard.writeText(outEl.textContent).catch(()=>{}));
+  $('#downloadBtn').addEventListener('click', () => {
+    const blob = new Blob([outEl.textContent], {type: 'text/markdown;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'output.md';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 500);
+  });
+
+  // --------- Core conversion ----------
+  function texToMarkdown(tex){
+    if (!tex) return '';
+
+    // Normalize + strip comments (unescaped %)
+    tex = tex.replace(/\r\n?|\u2028|\u2029/g, '\n');
+    tex = tex.replace(/(^|[^\\])%.*$/gm, '$1');
+    tex = tex.replace(/\\%/g, '%');
+
+    // Regex that supports both brace and no-brace forms of \renewcommand
+    const renCmdGlobal = /\\renewcommand\s*(?:\{\s*\\thesection\s*\}|\\thesection)\s*\{([\s\S]*?)\}/g;
+
+    // Extract prefix letter from the body (robust against \textbf and braces)
+    function extractPrefix(body){
+      // unwrap \textbf{...} and remove braces for simpler scanning
+      let s = body.replace(/\\textbf\s*\{([\s\S]*?)\}/g, '$1');
+      // find where \arabic{section} appears
+      const ar = /\\arabic\s*\{\s*section\s*\}/i.exec(s);
+      if (!ar) return '';
+      const upto = s.slice(0, ar.index);
+      // walk backwards to find the nearest A-Z letter before that point
+      for (let i = upto.length - 1; i >= 0; i--) {
+        const ch = upto[i];
+        if (/[A-Za-z]/.test(ch)) return ch.toUpperCase();
+        if (/[^\s{}]/.test(ch)) {
+          // hit a non-letter token before finding a letter ⇒ give up
+          // but continue searching (some tokens like punctuation may appear)
+        }
+      }
+      return '';
+    }
+
+    // Pre-scan: LaTeX last definition wins
+    let initialPrefix = '';
+    let m;
+    while ((m = renCmdGlobal.exec(tex)) !== null) {
+      const body = m[1];
+      const p = body.split("{")[1][0];
+      if (p) initialPrefix = p;
+    }
+
+    const lines = tex.split('\n');
+    const out = [];
+
+    let currentPrefix = initialPrefix; // updated inline if a later \renewcommand appears
+    let sectionNum = 0;
+    let stack = []; // enumerate counters per nesting level
+    let lastItemIndex = -1; // for continuation lines
+
+    function inline(s){
+      if (!s) return '';
+      return s
+        .replace(/\\textbf\{([^{}]*)\}/g, '**$1**')
+        .replace(/\\emph\{([^{}]*)\}/g, '*$1*')
+        .replace(/``/g, '"').replace(/''/g, '"')
+        .replace(/\\ref\{([^}]*)\}/g, '$1')
+        .replace(/\\_/g, '_').replace(/\\&/g, '&');
+    }
+
+    function isStandaloneCmd(line){
+      return /^\\[A-Za-z]+\*?(\[[^\]]*\])?(\{[^}]*\})*$/.test(line.trim());
+    }
+
+    const skipStarts = [/^\\input\s*\{/, /^\\hiddenchapter\s*\{/, /^\\hiddensection\s*\{/, /^\\label\s*\{/, /^\\begin\s*\{itemize\}/, /^\\end\s*\{itemize\}/];
+    function shouldSkipRaw(line){ return skipStarts.some(re => re.test(line)); }
+    function blank(){ if (out.length && out[out.length-1] !== '') out.push(''); }
+
+    for (let raw of lines){
+      let line = raw.trim();
+      if (line === '') { out.push(''); lastItemIndex = -1; continue; }
+
+      // Update prefix when we encounter a renewcommand in-stream; reset section counters
+      const renHere = line.match(/\\renewcommand\s*(?:\{\s*\\thesection\s*\}|\\thesection)\s*\{([\s\S]*?)\}/);
+      if (renHere){
+        const body = renHere[1];
+        const p = extractPrefix(body);
+        if (p) currentPrefix = p;
+        sectionNum = 0; stack = []; lastItemIndex = -1;
+        continue; // do not emit this line
+      }
+
+      if (shouldSkipRaw(line)) { lastItemIndex = -1; continue; }
+
+      // Chapter title → #
+      const chap = line.match(/\\ChapterTitle\s*\[[^\]]*\]\s*\{([^}]*)\}/);
+      if (chap){ out.push('# ' + inline(chap[1].trim())); lastItemIndex = -1; continue; }
+
+      // Section title → ## <Prefix><n> Title
+      const sec = line.match(/\\SectionTitle\s*\{[^}]*\}\s*\{([^}]*)\}/);
+      if (sec){
+        sectionNum += 1;
+        stack = [];
+        const prefix = currentPrefix || '';
+        out.push(`## ${prefix}${sectionNum} ${inline(sec[1].trim())}`);
+        lastItemIndex = -1;
+        continue;
+      }
+
+      // enumerate start/end
+      if (/^\\begin\s*\{enumerate\}/.test(line)) { stack.push(0); blank(); lastItemIndex = -1; continue; }
+      if (/^\\end\s*\{enumerate\}/.test(line))   { stack.pop(); if (stack.length === 0) blank(); lastItemIndex = -1; continue; }
+
+      // Item lines
+      const item = line.match(/^\\item\s*(.*)$/);
+      if (item){
+        if (stack.length === 0) stack.push(0); // safety for stray items
+        stack[stack.length - 1] += 1;
+        const chain = stack.join('.');
+        const secPart = (currentPrefix ? currentPrefix : '') + (sectionNum > 0 ? String(sectionNum) : '');
+        const label = secPart ? `${secPart}.${chain}` : chain; // e.g., P1.1, P1.1.1
+        const indent = '    '.repeat(Math.max(0, stack.length - 1));
+        out.push(`${indent}- ${label} ${inline(item[1].trim())}`);
+        lastItemIndex = out.length - 1;
+        continue;
+      }
+
+      // Continuation text for previous item
+      if (lastItemIndex >= 0) {
+        out[lastItemIndex] = out[lastItemIndex].replace(/\s+$/,'') + ' ' + inline(line);
+        continue;
+      }
+
+      // Drop stray LaTeX-only command lines
+      if (isStandaloneCmd(line)) { lastItemIndex = -1; continue; }
+
+      // Plain paragraph
+      out.push(inline(line));
+      lastItemIndex = -1;
+    }
+
+    let md = out.join('\n');
+
+    // Remove residual braces and leftover commands (defensive clean-up)
+    md = md.replace(/[{}]/g, '');
+    md = md.replace(/\\[A-Za-z]+\*?(\[[^\]]*\])?(\{[^}]*\})*/g, '');
+
+    // Trim trailing spaces & collapse 3+ newlines
+    md = md.replace(/[\t ]+$/gm, '');
+    md = md.replace(/\n{3,}/g, '\n\n');
+
+    return md.trim();
+  }
+})();
+</script>
+</body>
+</html>
