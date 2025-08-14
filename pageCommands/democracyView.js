@@ -20,7 +20,7 @@ module.exports = {
             if(event.queryStringParameters.doc == "so"){
                 content = await standingOrders(editAbility);
             } else if(event.queryStringParameters.doc == "min" && !!event.queryStringParameters.id){
-                content = await minutes(minuteId, editAbility);
+                content = await minutes(event.queryStringParameters.id, editAbility);
             }
         }
         if(!content){
@@ -65,7 +65,8 @@ async function mainPage(editAbility){
         if(article == "0-standing-orders"){continue;}
         else {
             let time = article.split("-")[1];
-            content += `<li><a href="/democracy?doc=min&id=${article}">First Published: ${new Date(time * 1000).toLocaleString('en-GB', { timeZone: 'Europe/London' })}</a></li>`
+            let name = article.split("-")[2];
+            content += `<li><a href="/democracy?doc=min&id=${article}">${name} (published ${new Date(time * 1000).toLocaleString('en-GB', { timeZone: 'Europe/London' })})</a></li>`
         }
     }
 
@@ -125,10 +126,12 @@ async function minutes(minuteId, editAbility){
     <div style="text-align: left; margin: 0 auto; max-width: 800px;"><h2>${minute.title}</h2>`
 
     if(editAbility){
-        content += `<button onclick="location.href='/exec/democracy/edit?id=${minuteId}'" class="redirect-button">Edit Minute</button>`
+        content += `<button onclick="location.href='/exec/democracy/edit?id=${minuteId}'" class="redirect-button">Edit Minute</button><br>`
     }
 
-    content += `<p>=== BEGINS ===</p>`
+    content += `<b>First Published</b>: ${new Date(minute.published * 1000).toLocaleString('en-GB', { timeZone: 'Europe/London' })}<br>
+            <b>Last Edited</b>: ${new Date(minute.edit * 1000).toLocaleString('en-GB', { timeZone: 'Europe/London' })}
+            <p>=== BEGINS ===</p>`
 
     content += md.render(minute.markdownData).replace(/\n/g,"<br>").replace(/<p>/g,"").replace(/<\/p>/g,"")
 

@@ -35,6 +35,8 @@ module.exports = {
 
         // content
         if(inputBody.content){
+            // START: copied to new handler
+
             // normalises dodgy quotation marks
             let buffer = Buffer.from(inputBody.content, "binary");
             let fixedString = iconv.decode(buffer, 'win1252');
@@ -54,6 +56,8 @@ module.exports = {
                 success.push(`Successfully changed content of this article`);
                 file.markdownData = fixedString;
             }
+
+            // END: copied to new handler
         } else {
             failure.push("No Content Provided")
         }
