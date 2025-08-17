@@ -90,6 +90,8 @@ module.exports = {
             <label for="upload">Upload Avatar</label>
             ${fs.readFileSync("./assets/elements/squareUpload.html").toString()}
 
+            <p>Want to remove your avatar? Well, I became too busy to make it into a feature. Just upload something like <a href="https://butler-jcr-public.s3.eu-west-2.amazonaws.com/sabbs/2006Mole.jpg" target="_blank">the mole</a> (which is what shows by default anyway if there was never an avatar)</p>
+
             <input type="hidden" value="${cisToUse}" name="cis">
 
             <input type="submit" class="inputSubmit" value="Submit Changes">
