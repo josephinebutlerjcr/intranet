@@ -16,15 +16,13 @@ module.exports = {
             return await forbiddenPage.execute(event,verification)
         }
 
-        // retrieves the file
+        // checks the file existance
         const democracyPage = require("./democracyView")
         if(!inputBody.article){
             return await democracyPage.execute(event,verification);
         }
-        let file = {}
         try {
-            file = await getS3Item(config.buckets.operational, `democracy/${inputBody.article}.json`);
-            file = JSON.parse(file);
+            let file = await getS3Item(config.buckets.content, `democracy/${inputBody.article}.pdf`);
         } catch(err) {
             return await democracyPage.execute(event,verification);
         }
@@ -33,40 +31,38 @@ module.exports = {
         let success = [];
         let failure = [];
 
-        // content
-        if(inputBody.content){
-            // START: copied to new handler
+        let slug = inputBody.article; let update = true;
 
-            // normalises dodgy quotation marks
-            let buffer = Buffer.from(inputBody.content, "binary");
-            let fixedString = iconv.decode(buffer, 'win1252');
-            fixedString = fixedString
-                .replace(/â€™/g, "'")
-                .replace(/â€˜/g, "'")
-                .replace(/â€œ/g, '"')
-                .replace(/â€/g, '"')
-                .replace(/â€“/g, '-')
-                .replace(/Â/g, '')
-                .replace(/\u00E2\u20AC\uFFFD/g, "'");
-            
-                // tests
-            if(/^[A-Za-z0-9 \n\-.,#\[\]\(\)_\/\*:'@~%£!\?‘’"`;\s–“”+&\\]{1,1000000}$/.test(fixedString) == false){
-                failure.push("Content invalid. Use 1–1,000,000 chars: A–Z a–z 0–9 spaces, new lines, and - . , # [ ] ( ) _ / * : ' @ ~ % £ ! ? ‘ ’ ` ; \" “ ” + & \\");
-            } else {
-                success.push(`Successfully changed content of this article`);
-                file.markdownData = fixedString;
+        // pdf data url: copied from edit handler! - uploads too
+        const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+        const s3 = new S3Client();
+        try {
+            inputBody.pdfDataUrl = inputBody.pdfDataUrl.replace(/ /g,"+")
+            const base64 = inputBody.pdfDataUrl.replace(/^data:application\/pdf;base64,/, "");
+            const buffer = Buffer.from(base64, "base64");
+            if(inputBody.pdfDataUrl.includes("application/pdf" == false)){
+                failure.push("Only PDFs are accepted");
+                update = false;
+            } else if(buffer.length > 1536*1024){
+                failure.push(`Maximum 1536 KB accepted. This file is ${Math.ceil(buffer.length / 1024)} KB large (rounded up)`);
+                update = false;
+            } else if(update == true) {
+                const command = new PutObjectCommand({
+                    Bucket: config.buckets.content,
+                    Key: `democracy/${slug}.pdf`,
+                    Body: buffer,
+                    ContentType: "application/pdf"
+                })
+                await s3.send(command);
+                success.push("Uploaded Minutes")
             }
-
-            // END: copied to new handler
-        } else {
-            failure.push("No Content Provided")
+        } catch(err) {
+            failure.push("Internal server error when uploading. Please contact the webmaster if this error persists.");
+            update = false;
         }
 
         // makes updates
         if(success.length != 0){
-            // updates files
-            file.edit = getTime()
-            await putS3Item(JSON.stringify(file), config.buckets.operational, `democracy/${inputBody.article}.json`)
 
             // logbook changes
             let logBook = []
@@ -91,7 +87,7 @@ module.exports = {
         event.processName = "Edit a Democracy Article";
         event.processRemarks = `<b>Successes:</b><br>${success.join("<br>")} <br><br> <b>Failures:</b><br>${failure.join("<br>")}<br><br>`;
         if(success.length != 0){
-            event.processRemarks += `<b>Changes have been made</b>`;
+            event.processRemarks += `<b>Changes have been made</b> - please note when you return, you may see the old version due to caching. Please clear your browser cache for this website to see the new version immediately.`;
             event.allowBack = false;
             event.otherLink = `/democracy?doc=min&id=${inputBody.article}`;
             if(inputBody.article == "0-standing-orders"){
