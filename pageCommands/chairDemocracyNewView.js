@@ -14,24 +14,54 @@ module.exports = {
 
 
         let content = `<button onclick="history.back()" class="redirect-button">Go Back</button><div style="text-align: left; margin: 0 auto; max-width: 800px;"><h2>Create a Meeting Minute</h2>
-        <p>The minute must be in markdown (<a href="https://www.markdownguide.org/basic-syntax/"  target="_blank">help on syntax</a>).
-        The article, including the markdown, must only include alphanumeric characters, spaces, new lines, and the special symbols: -.,#\[\]\(\)_\/\*:'@~%£!\?‘’"\`;–“”+&\\ - up to a maximum of 1,000,000 characters.
-        The title must be 1 to 32 characters, A-Z a-z 0-9, spaces, and special symbols: '-:,.</p>
-        <br>Warning: you are unable to edit the name of, or delete the minute after published. If you want to do so, you must contact the webmaster.
-
-        <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
 
         <form action="/exec/democracy/new" method="post">
-            <input type="name" placeholder="Minute Title" name="title" class="inputField">
-            <textarea id="editor" name="content"></textarea>
+
+            <label>Title of Minute, e.g. "01/10/2024" (only 1-32 characters, A-Z a-z 0-9 '-:,./ and spaces only)</label>
+            <input type="name" placeholder="Minute Title" name="title" class="inputField" required autocomplete="off">
+
+            <label>Category</label>
+            <select name="category" class="inputField" required>
+                <option value="jcr">JCR Meeting</option>
+                <option value="welfare">Welfare Meeting</option>
+                <option value="other">Other Meeting</option>
+            </select>
+
+            <label>Year (start of academic year, e.g. February 2025 --> 2024)</label>
+            <input type="number" name="year" class="inputField" required autocomplete="off">
+
+            <label for="pdfFile">Upload PDF (max 1.5 MB):</label>
+            <input type="file" id="pdfFile" accept="application/pdf" required class="inputField">
+            <input type="hidden" name="pdfDataUrl" id="pdfDataUrl" autocomplete="off">
+
             <input type="submit" class="inputSubmit" value="Create">
         </form>
 
         <script>
-            var simplemde = new SimpleMDE({ element: document.getElementById("editor") });
-        </script>
-        `
+            const fileInput = document.getElementById('pdfFile');
+            const hiddenInput = document.getElementById('pdfDataUrl');
+            const MAX_SIZE = 1536 * 1024;
+
+            fileInput.addEventListener('change', () => {
+                const file = fileInput.files[0];
+                if (!file) return;
+                if (file.type !== 'application/pdf') {
+                    alert('Only PDF files are allowed.');
+                    fileInput.value = '';
+                    return;
+                }
+                if (file.size > MAX_SIZE) {
+                    alert('File is too large. Max 1.5 MB allowed.');
+                    fileInput.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    hiddenInput.value = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        </script>`
 
         content += `</div>`
 

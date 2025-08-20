@@ -1,8 +1,6 @@
 const fs = require("fs");
 const {listDirectoryFiles, getS3Item} = require("../auxilliaryFunctions/s3")
 const config = require("../config.json")
-const MarkdownIt = require("markdown-it");
-const md = new MarkdownIt();
 
 // main
 module.exports = {
@@ -47,95 +45,129 @@ async function mainPage(editAbility){
     // base line
     let content = 
         `<button class="redirect-button" onclick="location.href='/'">Back to Dashboard</button><div style="text-align: left; margin: 0 auto; max-width: 800px;">
+        <h2>Notices</h2>
+        <p>If you require an alternative format of documents for accessibility reasons, please contact <a href="mailto:butler.chair@durham.ac.uk">butler.chair@durham.ac.uk</a>.
+        All documents here are currently in the PDF format.</p>
         <h2>Standing Orders</h2>
         <button onclick="location.href='/democracy?doc=so'" class="redirect-button">Click to View</button>
         <h2>Minutes</h2>`;
     
     // allows new minutes
     if(editAbility){
-        content += `<button onclick="location.href='/exec/democracy/new'" class="redirect-button">Create New Minute</button>`
+        content += `<button onclick="location.href='/exec/democracy/new'" class="redirect-button">Create New Minute</button><br>`
     }
 
     // minutes
-    content += "<ul>"
-
-    let democracyArticles = await listDirectoryFiles(config.buckets.operational, `democracy/`);
+    let democracyArticles = await listDirectoryFiles(config.buckets.content, `democracy/`);
     democracyArticles = democracyArticles.sort();
+
+    let dataStructure = {} // categories on first level, year on the second
+
     for(let article of democracyArticles){
         if(article == "0-standing-orders"){continue;}
         else {
-            let time = article.split("-")[1];
-            let name = article.split("-")[2];
-            content += `<li><a href="/democracy?doc=min&id=${article}">${name} (published ${new Date(time * 1000).toLocaleString('en-GB', { timeZone: 'Europe/London' })})</a></li>`
+            let category = article.split("-")[1];
+            let year = article.split("-")[2];
+            if(!dataStructure[category]){
+                dataStructure[category] = {}
+            }
+            if(!dataStructure[category][year]){
+                dataStructure[category][year] = []
+            }
+            dataStructure[category][year].push(article)
         }
     }
 
+    // goes through each category
+    let categories =  Object.keys(dataStructure);
+    categories = categories.sort();
+    for(let category of categories){
+        content += `<br><b>${category}</b><ul>`
+
+        let years = Object.keys(dataStructure[category]);
+        years = years.sort()
+        for(let year of years){
+            content += `<li>${year}<ul>`
+
+            let documents = dataStructure[category][year];
+            documents = documents.sort();
+
+            for(let article of documents){
+                let time = article.split("-")[0];
+                let name = article.split("-")[3];
+
+                content += `<li><a href="/democracy?doc=min&id=${article}">${name} (published ${new Date(time * 1000).toLocaleString('en-GB', { timeZone: 'Europe/London' })})</a></li>`
+            }
+
+            content += `</ul></li>`
+        }
+
+        content += `</ul>`
+    }
+
     // concludes contents
-    content += `</ul></div>`
+    content += `</div>`
 
     return content;
 }
 
 // loads standing orders
 async function standingOrders(editAbility){
-    let standingOrderData = {};
+    let content = `<button class="redirect-button" onclick="location.href='/democracy'">Democracy Pages</button>`;
     try {
-        standingOrderData = await getS3Item(config.buckets.operational, "democracy/0-standing-orders.json");
-        standingOrderData = JSON.parse(standingOrderData)
+        standingOrderData = await getS3Item(config.buckets.content, "democracy/0-standing-orders.pdf");
     } catch(err){
-        standingOrderData = {
-            "published":0,
-            "edit":0,
-            "title":"Standing Orders",
-            "markdownData":"# Sorry\n\nWe could not load the standing orders. Please try again later. If this error persists, contact the webmaster."
-        }
+        content += "<p>Apologies we could not find the Standing Orders</p>"
+        return content;
     }
-
-    content = `<button class="redirect-button" onclick="location.href='/democracy'">Democracy Pages</button>
-    <div style="text-align: left; margin: 0 auto; max-width: 800px;"><h2>Standing Orders</h2>`
 
     if(editAbility){
-        content += `<button onclick="location.href='/exec/democracy/edit?id=0-standing-orders'" class="redirect-button">Edit Standing Orders</button>`
+        content += ` | <button onclick="location.href='/exec/democracy/edit?id=0-standing-orders'" class="redirect-button">Edit Standing Orders</button>`
     }
 
-    content += `<p>=== BEGINS ===</p>`
-
-    content += md.render(standingOrderData.markdownData).replace(/\n/g,"<br>").replace(/<p>/g,"").replace(/<\/p>/g,"")
-
-    content += `<p>=== ENDS ===</p</div>`
+    content += `<br>
+    <div style="width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8f9fa; border: 1px solid #ddd; border-radius: 12px; overflow: hidden;">
+    <object data="https://${config.buckets.content}.s3.eu-west-2.amazonaws.com/democracy/0-standing-orders.pdf" type="application/pdf" width="100%" height="100%">
+        <p>Unable to display the PDF directly in your browser.</p>
+    </object>
+    </div>
+    <p><a href="https://${config.buckets.content}.s3.eu-west-2.amazonaws.com/democracy/0-standing-orders.pdf" target="_blank">Open in New Tab</a></p>`
 
     return content;
 }
 
 // loads specific minute
 async function minutes(minuteId, editAbility){
-    let minute = {};
+    let content = `<button class="redirect-button" onclick="location.href='/democracy'">Democracy Pages</button>`;
     try {
-        minute = await getS3Item(config.buckets.operational, `democracy/${minuteId}.json`);
-        minute = JSON.parse(minute)
+        standingOrderData = await getS3Item(config.buckets.content, `democracy/${minuteId}.pdf`);
     } catch(err){
-        minute = {
-            "published":0,
-            "edit":0,
-            "title":"Sorry",
-            "markdownData":"We could not load the minute, perhaps because it does not exist. Please try again later. If this error persists, contact the webmaster."
-        }
+        content += "<p>Apologies we could not find the minutes</p>"
+        return content;
     }
-
-    content = `<button class="redirect-button" onclick="location.href='/democracy'">Democracy Pages</button>
-    <div style="text-align: left; margin: 0 auto; max-width: 800px;"><h2>${minute.title}</h2>`
 
     if(editAbility){
-        content += `<button onclick="location.href='/exec/democracy/edit?id=${minuteId}'" class="redirect-button">Edit Minute</button><br>`
+        content += ` | <button onclick="location.href='/exec/democracy/edit?id=${minuteId}'" class="redirect-button">Edit</button>`
     }
 
-    content += `<b>First Published</b>: ${new Date(minute.published * 1000).toLocaleString('en-GB', { timeZone: 'Europe/London' })}<br>
-            <b>Last Edited</b>: ${new Date(minute.edit * 1000).toLocaleString('en-GB', { timeZone: 'Europe/London' })}
-            <p>=== BEGINS ===</p>`
+    let time = minuteId.split("-")[0];
+    let category = minuteId.split("-")[1];
+    let year = minuteId.split("-")[2];
+    let name = minuteId.split("-")[3];
 
-    content += md.render(minute.markdownData).replace(/\n/g,"<br>").replace(/<p>/g,"").replace(/<\/p>/g,"")
-
-    content += `<p>=== ENDS ===</p</div>`
+    content += `<br>
+    <p style="text-align: left;">
+        <b>Published on</b> ${new Date(time * 1000).toLocaleString('en-GB', { timeZone: 'Europe/London' })} <br>
+        <b>Category</b> ${category} <br>
+        <b>Academic Year</b> Starting on Michaelmas ${year} <br>
+        <b>Title</b> ${name}
+    </p>
+    <div style="width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8f9fa; border: 1px solid #ddd; border-radius: 12px; overflow: hidden;">
+    <object data="https://${config.buckets.content}.s3.eu-west-2.amazonaws.com/democracy/${minuteId}.pdf" type="application/pdf" width="100%" height="100%">
+        <p>Unable to display the PDF directly in your browser.</p>
+    </object>
+    </div>
+    <p><a href="https://${config.buckets.content}.s3.eu-west-2.amazonaws.com/democracy/${minuteId}.pdf" target="_blank">Open in New Tab</a></p>`
 
     return content;
 }

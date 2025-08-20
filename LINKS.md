@@ -12,12 +12,12 @@
 | /people                   | GET       | Whose Who of Exec                 | General       | X |
 | /family                   | GET       | College Family Basics             | General/Fmly  | |
 | /family/tree              | GET       | College Family Tree               | Families      | |
-| /account                  | GET       | Membership Registry               | General       | |
-| /account                  | POST      | Change basics of details          | General       | |
-| /democracy                | GET       | View democratic documents         | General       | |
+| /account                  | GET       | Membership Registry               | General       | X |
+| /account                  | POST      | Change basics of details          | General       | X |
+| /democracy                | GET       | View democratic documents         | General       | X |
 | Groups Admins |
-| /groups/edit              | GET       | Edits own group                   | General*      | |
-| /groups/edit/handle       | POST      | Edits own group handle            | General*      | |
+| /groups/edit              | GET       | Edits own group                   | General*      | IN EXEC ENDPOINT |
+| /groups/edit/handle       | POST      | Edits own group handle            | General*      | IN EXEC ENDPOINT |
 | Executive of JCR |
 | /exec                     | GET       | Dashboard on abilities            | Exec          | X |
 | /exec/groups              | GET       | Registry of groups with edit      | Exec          | X |
@@ -27,15 +27,14 @@
 | /exec/groups/edit         | POST      | Handles edit to a group           | Exec          | X |
 | /exec/me                  | GET       | Edits own profile**               | Exec          | X |
 | /exec/me                  | POST      | Edits own profile handle**        | Exec          | X |
-| Chair and Vice Chair |
-| /democracy/new            | GET       | New minutes: upload               | Chair         | |
-| /democracy/new            | POST      | New minutes: upload handle        | Chair         | |
-| /democracy/edit           | GET       | Edit minutes: upload              | Chair         | |
-| /democracy/edit           | POST      | Edit minutes: upload handle       | Chair         | |
-| /democracy/standing       | GET       | Edit Standing Orders              | Chair         | |
-| /democracy/standing       | POST      | Edit Standing Orders handle       | Chair         | |
-| /exec/members             | GET       | Change exec members and autoperm  | Admin         | |
-| /exec/members             | POST      | Handle the above                  | Admin         
+| Chair and Vice Chair      |
+| /exec/democracy/new       | GET       | New minutes: upload               | Chair         | X |
+| /exec/democracy/new       | POST      | New minutes: upload handle        | Chair         | X |
+| /exec/democracy/edit      | GET       | Edit minutes: upload              | Chair         | X |
+| /exec/democracy/edit      | POST      | Edit minutes: upload handle       | Chair         | X |
+| /exec/democracy/tool      | POST      | Tool S/O TeX to MD                | Chair         | X |
+| /exec/members             | GET       | Change exec members and autoperm  | Admin         | X |
+| /exec/members             | POST      | Handle the above                  | Admin         | X |
 | Admin |
 | /admin/registry           | GET       | Full list of members              | Admin         | |
 | /admin/registry/new       | GET       | New member (indiv/import)         | Admin         | |

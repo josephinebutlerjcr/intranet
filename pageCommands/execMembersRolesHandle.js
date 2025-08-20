@@ -47,7 +47,7 @@ module.exports = {
             if(ranks.main[rankName] != inputRanks.main[rankName]){
                 if(cisRegex.test(inputRanks.main[rankName])){
                     // success: changes the privilege levels of incoming, and outgoing (to general, if they didn't take on another post)
-                    if(["President","Facso","Webmaster","Vice-President"].includes(rankName)){
+                    if(["President","Facso","Webmaster"].includes(rankName)){
                         changePrivilege[inputRanks.main[rankName]] = "admin";  
                     } else {
                         changePrivilege[inputRanks.main[rankName]] = "chair";  

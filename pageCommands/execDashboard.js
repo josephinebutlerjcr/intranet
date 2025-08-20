@@ -22,6 +22,7 @@ module.exports = {
             extras += 
             `<div class="card"><i class="fas fa-people-group" style="font-size: 2.5rem; margin-bottom: 8px; color: #f0d954;"></i><h3>Families Editor</h3><p>You are registered to be able to edit college families.</p><a href="/admin/families">Families Editor →</a></div>
             <div class="card"><i class="fas fa-address-book" style="font-size: 2.5rem; margin-bottom: 8px; color: #f0d954;"></i><h3>Members Registry</h3><p>Edit the members details.</p><a href="/admin/registry">Registry →</a></div>
+            <div class="card"><i class="fas fa-address-book" style="font-size: 2.5rem; margin-bottom: 8px; color: #f0d954;"></i><h3>Emailer</h3><p>Emails the general exec, and president of societies, for information.</p><a href="/admin/emailer">Email →</a></div>
             <div class="card" style="text-align: center;"><i class="fas fa-clipboard-list" style="font-size: 2.5rem; margin-bottom: 8px; color: #f0d954;"></i><h3>Audit Logs</h3><p>View a full history of changes to societies and the exec (including profiles)</p><a href="/admin/audit">View Logs →</a></div>`
         }
         

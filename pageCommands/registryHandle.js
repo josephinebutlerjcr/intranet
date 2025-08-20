@@ -46,24 +46,25 @@ module.exports = {
                     await putS3Item(JSON.stringify(biographies), config.buckets.operational, `executive/biographies.json`);
                     success.push("As a result, the name has been changed on exec profile.")
                 } catch(err){}
+
+                // logbook (CHANGED ON 20/08/2025: only for EXEC because some non-exec person chronically online enough to randomly look at the website before I told anyone 
+                // got a log made, and I don't like that as it clutters stuff!)
+                let logBook = []
+                try {
+                    logBook = await getS3Item(config.buckets.operational,`logs/exec/${verification.cis}.json`)
+                    logBook = JSON.parse(logBook);
+                } catch(err){
+                    logBook = [];
+                }
+                logBook.push({
+                    time: getTime(),
+                    person: verification.cis,
+                    notes:success
+                })
+                try {
+                    await putS3Item(JSON.stringify(logBook),config.buckets.operational, `logs/exec/${verification.cis}.json`)
+                } catch(err){}
             }
-            
-            // logbook
-            let logBook = []
-            try {
-                logBook = await getS3Item(config.buckets.operational,`logs/exec/${verification.cis}.json`)
-                logBook = JSON.parse(logBook);
-            } catch(err){
-                logBook = [];
-            }
-            logBook.push({
-                time: getTime(),
-                person: verification.cis,
-                notes:success
-            })
-            try {
-                await putS3Item(JSON.stringify(logBook),config.buckets.operational, `logs/exec/${verification.cis}.json`)
-            } catch(err){}
         }
 
         // override: new user goes to dashboard
