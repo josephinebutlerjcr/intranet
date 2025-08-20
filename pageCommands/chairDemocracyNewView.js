@@ -23,6 +23,8 @@ module.exports = {
             <label>Category</label>
             <select name="category" class="inputField" required>
                 <option value="jcr">JCR Meeting</option>
+                <option value="exec">Exec Meeting</option>
+                <option value="finance">Finance Meeting</option>
                 <option value="welfare">Welfare Meeting</option>
                 <option value="other">Other Meeting</option>
             </select>

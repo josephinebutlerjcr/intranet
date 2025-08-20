@@ -49,8 +49,10 @@ module.exports = {
                     // success: changes the privilege levels of incoming, and outgoing (to general, if they didn't take on another post)
                     if(["President","Facso","Webmaster"].includes(rankName)){
                         changePrivilege[inputRanks.main[rankName]] = "admin";  
-                    } else {
+                    } else if(["Chair","Vice-Chair"].includes(rankName)) {
                         changePrivilege[inputRanks.main[rankName]] = "chair";  
+                    } else {
+                        changePrivilege[inputRanks.main[rankName]] = "exec";  
                     }
                     if(!changePrivilege[ranks.main[rankName]]){changePrivilege[ranks.main[rankName]] = "general"}
                     success.push(`Changed ${rankName} from ${ranks.main[rankName]} to ${inputRanks.main[rankName]}`);

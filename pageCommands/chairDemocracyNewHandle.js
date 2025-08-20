@@ -50,7 +50,7 @@ module.exports = {
         }
 
         // category
-        if(["jcr","welfare","other"].includes(inputBody.category) == false){
+        if(["jcr","exec","finance","welfare","other"].includes(inputBody.category) == false){
             failure.push("Category invalid; only one of the pre-set inputs allowed.");
             update = false;
         } else {
