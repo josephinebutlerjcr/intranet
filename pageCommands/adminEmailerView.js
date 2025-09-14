@@ -14,8 +14,7 @@ module.exports = {
         }
         
         // main content
-        let content = `<div style="max-width: 800px; margin: 0 auto; text-align: left;">
-        <button class="redirect-button" onclick="location.href='/'">Back to Dashboard</button>
+        let content = `<button class="redirect-button" onclick="location.href='/exec'">Executive's Dashboard</button><div style="max-width: 800px; margin: 0 auto; text-align: left;">
   <h2>Emailer</h2>
   <p>
     This page is the way for you to send a pre-determined email to new or existing exec members for student groups, and the main thing.
