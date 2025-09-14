@@ -94,7 +94,7 @@ module.exports = {
 
                     <h3>People</h3>
 
-                    <p>In this "people" section, provide the CIS codes of people involved in the group's executive. President is the only essential field. If the position is joint between two people, separate the two CIS codes with a comma (,). Enter "abdc12" as a dummy CIS code to remove the field (optional fields only)</p>
+                    <p>In this "people" section, provide the CIS codes of people involved in the group's executive. President is the only essential field. If the position is joint between two people, separate the two CIS codes with a comma (,). Enter "abcd12" as a dummy CIS code to remove the field (optional fields only)</p>
 
                     <label id="preident">(Co-)President / Chair(s)</label>
                     <input type="text" class="inputField" name="president" id="president" value="${society.admins.president.join(",")}" autocomplete="off" required pattern="[a-zA-Z]{4}\\d{2}(,[a-zA-Z]{4}\\d{2})?">

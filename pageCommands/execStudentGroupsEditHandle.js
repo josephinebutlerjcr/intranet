@@ -188,7 +188,7 @@ module.exports = {
 
         // social medias
         if(!society.socials){society.socials = {}};
-        if(!!inputBody.instagram && !!society.socials.instagram && society.socials.instagram != inputBody.instagram){
+        if(!!inputBody.instagram && society.socials.instagram != inputBody.instagram){
             if(/^[\w](?!.*?\.{2})[\w.]{1,28}[\w]$/.test(inputBody.instagram) == false){
                 failure.push("Invalid instagram handle given");
                 update = false;
@@ -197,7 +197,7 @@ module.exports = {
                 society.socials.instagram = inputBody.instagram;
             }
         }
-        if(!!inputBody.whatsapp && !!society.socials.whatsapp && society.socials.whatsapp != inputBody.whatsapp.replace(/https:\/\/chat\.whatsapp\.com\//g, "")){
+        if(!!inputBody.whatsapp && society.socials.whatsapp != inputBody.whatsapp.replace(/https:\/\/chat\.whatsapp\.com\//g, "")){
             let whatsappCode = inputBody.whatsapp.replace(/https:\/\/chat\.whatsapp\.com\//g, "");
             if(/^[a-zA-Z0-9]{22}$/g.test(whatsappCode) == false){
                 failure.push("Invalid WhatsApp chat link given");

@@ -136,8 +136,7 @@ async function societyView(society){
 
     // content 
     let content = 
-    `<button class="redirect-button" onclick="location.href='/'">Back to Dashboard</button> |
-    <button class="redirect-button" onclick="location.href='/exec'">Executive's Dashboard</button> |
+    `<button class="redirect-button" onclick="location.href='/exec'">Executive's Dashboard</button> |
     <button class="redirect-button" onclick="location.href='/exec/groups/edit?id=${society.id}'">Edit This Group</button> |
     <button class="redirect-button" onclick="location.href='/exec/groups'">View All Groups</button>
     

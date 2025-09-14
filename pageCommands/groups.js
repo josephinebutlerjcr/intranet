@@ -116,7 +116,7 @@ async function individualSociety(society, verification){
   <div class="details">
     <div class="name">${society.name}</div>
     <div class="description">
-      ${society.description}
+      ${society.description.replace(/\n/g,"<br>")}
     </div>
     <div class="description">
     	<b>Executive of the Group:</b><br>
@@ -148,6 +148,8 @@ async function societiesList(){
             avatar: group.avatar
         })
     }
+
+    finalList.sort((a, b) => a.name.localeCompare(b.name));
 
     return finalList;
 }

@@ -51,7 +51,7 @@ module.exports = {
         }
 
         // content starter
-        content = `<button class="redirect-button" onclick="location.href='/'">Back to Dashboard</button> | <button class="redirect-button" onclick="location.href='/exec'">Executive's Dashboard</button>
+        content = `<button class="redirect-button" onclick="location.href='/exec'">Executive's Dashboard</button>
         ${cisRemark}
     <section style="display: flex; justify-content: center;"><section class="latest-news" style="padding: 0; margin-top: 0; max-width: 600px; text-align: left;">
     <br><br>

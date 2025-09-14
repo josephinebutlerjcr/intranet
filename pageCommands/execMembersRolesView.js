@@ -37,6 +37,7 @@ module.exports = {
     .readonly { background-color: #b1333a; color:#f0d954 }
     input[type="text"] { box-sizing: border-box; width: 95%;font-size: 1rem;padding: 0.5rem;border-radius: 4px;margin-bottom: 1rem;border: 1px solid #ccc; }
 </style>
+<button class="redirect-button" onclick="location.href='/exec'">Executive's Dashboard</button>
 <h2>Before You Start</h2>
 <p>This service is available to admins and chairs only. Any roles which have a red background are statuatory roles, so can not be removed. You may add roles. If there are more than one person for a role, e.g. 'Welfare Officer', you must do two entries, with distinct names, for example 'Welfare Officer I' and 'Welfare Officer II'. Do note that the 'Webmaster' is not on the exec, but appears in this list, as this system will then grant the person the admin role.
 Do note that we assume one can not hold more than one role. If this is ever the case, then if they ever resign / leave one role, but keep the other, resign them from both roles, and reinstate them in the original role. If the person is one of the extra roles, and is one of the red roles, register them as an extra, then register them in the red role (as red roles grant extra system privileges).</p>
