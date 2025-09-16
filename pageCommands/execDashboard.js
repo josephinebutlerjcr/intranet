@@ -42,7 +42,7 @@ module.exports = {
         
         <br>
 
-        <p>If there are any issues or items to suggest, please report them to the webmaster.</p>`
+        <p>If there are any issues or items to suggest, please report them to the webmaster (<a href=\"mailto:butlerwebmaster@durham.ac.uk\">butlerwebmaster@durham.ac.uk</a>).</p>`
         
         // sending it to the user
         let resp = fs.readFileSync("./assets/html/generalPage.html").toString()

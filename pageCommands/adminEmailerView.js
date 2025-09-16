@@ -65,7 +65,7 @@ module.exports = {
     </p>
 
     <p>
-      If you have any problems, please contact the webmaster at (EMAIL) - or alternatively the JCR President at 
+      If you have any problems, please contact the webmaster at <a href="mailto:butlerwebmaster@durham.ac.uk">butlerwebmaster@durham.ac.uk</a> - or alternatively the JCR President at 
       <a href="mailto:butler.jcr@durham.ac.uk">butler.jcr@durham.ac.uk</a> (should there not be a Webmaster).
       Please do so by replying / forwarding this email, ensuring the webmaster / president is added into the email, 
       as this email has information which can help them solve the issue.
@@ -116,7 +116,7 @@ module.exports = {
     </p>
 
     <p>
-      If you have any problems, please contact the webmaster at (EMAIL) - or alternatively the JCR President at 
+      If you have any problems, please contact the webmaster at <a href="mailto:butlerwebmaster@durham.ac.uk">butlerwebmaster@durham.ac.uk</a> - or alternatively the JCR President at 
       <a href="mailto:butler.jcr@durham.ac.uk">butler.jcr@durham.ac.uk</a> (should there not be a Webmaster).
       Please do so by replying / forwarding this email, ensuring the webmaster / president is added into the email, 
       as this email has information which can help them solve the issue.
@@ -178,7 +178,7 @@ module.exports = {
     </p>
 
     <p>
-      If you have any problems, please contact the webmaster at (EMAIL) - or alternatively the JCR President at 
+      If you have any problems, please contact the webmaster at <a href="mailto:butlerwebmaster@durham.ac.uk">butlerwebmaster@durham.ac.uk</a> - or alternatively the JCR President at 
       <a href="mailto:butler.jcr@durham.ac.uk">butler.jcr@durham.ac.uk</a> (should there not be a Webmaster).
       Please do so by replying / forwarding this email, ensuring the webmaster / president is added into the email, 
       as this email has information which can help them solve the issue.

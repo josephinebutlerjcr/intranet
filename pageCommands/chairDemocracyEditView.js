@@ -32,7 +32,7 @@ module.exports = {
 
         let content = `<button onclick="history.back()" class="redirect-button">Go Back</button>
         <div style="text-align: left; margin: 0 auto; max-width: 800px;"><h2>Edit a Democracy Article</h2>
-        <p>Note: you can not edit anything except the contents of the article. If you want to, contact the webmaster.</p>
+        <p>Note: you can not edit anything except the contents of the article. If you want to, contact the webmaster (<a href=\"mailto:butlerwebmaster@durham.ac.uk\">butlerwebmaster@durham.ac.uk</a>).</p>
         <p>
             <b>Published on</b> ${new Date(time * 1000).toLocaleString('en-GB', { timeZone: 'Europe/London' })} <br>
             <b>Category</b> ${category} <br>
