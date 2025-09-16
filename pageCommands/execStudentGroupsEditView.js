@@ -68,7 +68,7 @@ module.exports = {
             <section class="latest-news" style="padding: 3rem 1rem; max-width: 600px; text-align: left;">
                 ${errorPrompts}
                 <h2 style="text-align: center;">Editing: ${society.name}</h2>
-                <p>You can not change the internal ID, ${society.id}. If you wish to do so, please contact the webmaster (the request may only be granted if it makes sense to do so).</p>
+                <p>You can not change the internal ID, ${society.id}. If you wish to do so, please contact the webmaster (<a href=\"mailto:butlerwebmaster@durham.ac.uk\">butlerwebmaster@durham.ac.uk</a>) (the request may only be granted if it makes sense to do so).</p>
                 <p>This form will be pre-filled with the current details. Change them if they need to be changed. Please note that we only permit A-Z, a-z, 0-9, spaces, and special symbols: ()!'£?&.,- only, and each field is permitted up to 32 characters (unless otherwise specified).</p>
                 <form action="/exec/groups/edit" method="post">
 

@@ -89,7 +89,7 @@ module.exports = {
                 if(base64String.length * 0.75 >= 250*1024){
                     failure.push("Could not update avatar: size above 250 KB");
                 } else {
-                    success.push("Updated Avatar")
+                    success.push("Updated Avatar - if this is an update and not a new avatar, it may take up to 24 hours to see changes due to browser cacheing")
                     society.avatar = true;
                     await uploadImageJpeg(config.buckets.content, `societylogo/${society.id}.jpg`, base64String);
                 }

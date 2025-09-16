@@ -11,7 +11,7 @@ module.exports = {
             return await forbiddenPage.execute(event,verification)
         }
 
-        let content = `<button class="redirect-button" onclick="location.href='/exec'">Executive's Dashboard</button><p>Sorry, you must ask the webmaster to do so manually as this is still a work in progress - to edit information, or as an override to add someone new. <a href="/exec">Click here</a> to go back.</p>`
+        let content = `<button class="redirect-button" onclick="location.href='/exec'">Executive's Dashboard</button><p>Sorry, you must ask the webmaster (<a href=\"mailto:butlerwebmaster@durham.ac.uk\">butlerwebmaster@durham.ac.uk</a>) to do so manually as this is still a work in progress - to edit information, or as an override to add someone new. <a href="/exec">Click here</a> to go back.</p>`
 
         // sending it to the user
         let resp = fs.readFileSync("./assets/html/generalPage.html").toString()

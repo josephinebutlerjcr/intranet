@@ -1,6 +1,6 @@
 {
     "fromEmail":"Butler JCR Intranet <noreply@butlerjcr.com>",
-    "replytoEmail":"butler.jcr@durham.ac.uk",
+    "replytoEmail":"butlerwebmaster@durham.ac.uk",
     "tables":{
         "users":"users",
         "groups":"groups"

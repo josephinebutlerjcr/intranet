@@ -22,12 +22,13 @@ module.exports = {
         let mergedResponsibilities = mergeResp(presidentOfSocieties, exec)
 
         // finds webmaster email
-        let webmasterCis = "Sorry, Not Available";
+        /*let webmasterCis = "Sorry, Not Available";
         for(let person of Object.keys(exec)){
             if(exec[person] == "Webmaster"){
                 webmasterCis = `${person}@durham.ac.uk`
             }
-        }
+        }*/
+       let webmasterCis = "butlerwebmaster@durham.ac.uk"
 
         // finds who to send to
         let sendList = {};

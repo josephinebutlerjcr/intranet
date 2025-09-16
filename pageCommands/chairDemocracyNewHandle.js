@@ -89,7 +89,7 @@ module.exports = {
                 success.push("Uploaded Minutes")
             }
         } catch(err) {
-            failure.push("Internal server error when uploading. Please contact the webmaster if this error persists.");
+            failure.push("Internal server error when uploading. Please contact the webmaster (<a href=\"mailto:butlerwebmaster@durham.ac.uk\">butlerwebmaster@durham.ac.uk</a>) if this error persists.");
             update = false;
         }
 
