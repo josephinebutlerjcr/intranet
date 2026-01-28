@@ -3,6 +3,15 @@ const config = require("../config.json")
 
 module.exports = {
     execute: async(event) => {
+        // LOCAL DEV: Return dev user immediately (no auth needed for local testing)
+        return {
+            cis: "lvhx35",
+            name: "Developer",
+            privilege: "admin",
+            membership: "JCR",
+            newUser: false
+        };
+        
         // extract cookie
         if(!event.headers){return false}
         if(!event.headers.cookie){return false}

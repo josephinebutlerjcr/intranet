@@ -1,4 +1,6 @@
 const fs = require("fs");
+const { loadDB } = require("../auxilliaryFunctions/stashStore");
+const { isStashManager } = require("../auxilliaryFunctions/stashAuth");
 
 // main
 module.exports = {
@@ -44,14 +46,24 @@ module.exports = {
             }
         ]
 
-        // adds permissions for exec / admin
-        if(["exec","chair","admin"].includes(verification.privilege)){
+        // generate panels
+        panels.push({
+            name: "College Merchandise",
+            desc: "Browse and purchase official college merchandise. Hoodies, t-shirts, mugs, and more!",
+            link: "/stash",
+            linkName: "Merchandise Store",
+            iconName: "fas fa-shopping-bag"
+        })
+        
+        // add merch manager panel if user is manager
+        const db = loadDB();
+        if(isStashManager(verification, db.settings)){
             panels.push({
-                name: "Exec's Portal",
-                desc: "<b>Exec / Admin Exclusive</b>: Societies Registration, Edit Personal Profile",
-                link: "/exec",
-                linkName: "Exec's Portal",
-                iconName: "fas fa-user-shield"
+                name: "Merchandise Manager",
+                desc: "<b>Manager Only</b>: Manage store settings, products, and orders",
+                link: "/stash/manage",
+                linkName: "Manager Portal",
+                iconName: "fas fa-cogs"
             })
         }
 
