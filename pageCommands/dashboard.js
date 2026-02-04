@@ -41,6 +41,13 @@ module.exports = {
                 link: "/democracy",
                 linkName: "Democratic Services",
                 iconName:"fas fa-scale-balanced"
+            },
+            {
+                name: "Stash",
+                desc: "Order some Josephine Butler College merchandise!",
+                link: "/stash",
+                linkName: "Stash Store",
+                iconName:"fas fa-shopping-bag"
             }
         ]
 
@@ -52,6 +59,14 @@ module.exports = {
                 link: "/exec",
                 linkName: "Exec's Portal",
                 iconName: "fas fa-user-shield"
+            })
+
+            panels.push({
+                name: "Merchandise Manager",
+                desc: "Manage store settings, products, and orders",
+                link: "/stash/manage",
+                linkName: "Manager Portal",
+                iconName: "fas fa-cogs"
             })
         }
 
