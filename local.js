@@ -31,40 +31,9 @@ app.use(async (req, res) => {
         pageCode = "GET/"
     }
 
-    // Check for exact match first
-    let matchedCmd = Object.keys(cmds).find(cmd => cmd === pageCode);
-    
-    // If no exact match, try dynamic routes with path parameters
-    if (!matchedCmd) {
-        const routeKeys = Object.keys(cmds);
-        for (let routeKey of routeKeys) {
-            const routePattern = routeKey.replace(/{([^}]+)}/g, '([^/]+)');
-            const regex = new RegExp(`^${routePattern}$`);
-            
-            // Extract path from pageCode (remove method prefix)
-            const methodMatch = pageCode.match(/^(GET|POST|PUT|DELETE|PATCH)(.+)$/);
-            if (methodMatch) {
-                const path = methodMatch[2];
-                const match = path.match(regex);
-                if (match) {
-                    // Extract path parameters
-                    const paramNames = (routeKey.match(/{([^}]+)}/g) || []).map(p => p.slice(1, -1));
-                    event.pathParameters = {};
-                    for (let i = 0; i < paramNames.length; i++) {
-                        event.pathParameters[paramNames[i]] = match[i + 1];
-                    }
-                    matchedCmd = routeKey;
-                    break;
-                }
-            }
-        }
-    }
-    
     // does page exist
-    if(!matchedCmd){
+    if(Object.keys(cmds).includes(pageCode) == false){
         pageCode = "GET/404"
-    } else {
-        pageCode = matchedCmd;
     }
 
     // return whatever
