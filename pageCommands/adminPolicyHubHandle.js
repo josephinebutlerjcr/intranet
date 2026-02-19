@@ -66,7 +66,7 @@ module.exports = {
             let slugSplit = article.split("-")
             if(parseInt(slugSplit[0]) == inputBody.number){
                 replacement = true;
-                oldSlugWithExt = article;
+                oldSlug = article;
             }
         }
 
