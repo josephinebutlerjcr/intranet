@@ -1,4 +1,4 @@
-const { S3Client, PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const { Buffer } = require("buffer");
 
 async function uploadImageJpeg(bucket, key, content){
@@ -51,6 +51,16 @@ async function streamToString(stream) {
     });
 }
 
+async function deleteS3Item(bucket, key) {
+    const client = new S3Client();
+    const command = new DeleteObjectCommand({
+        Bucket: bucket,
+        Key: key
+    });
+    const resp = await client.send(command);
+    return resp;
+}
+
 const { ListObjectsV2Command } = require("@aws-sdk/client-s3");
 
 async function listDirectoryFiles(bucketName, prefix) {
@@ -85,4 +95,4 @@ async function listDirectoryFiles(bucketName, prefix) {
     return list;
 }
 
-module.exports = {uploadImageJpeg,getS3Item,putS3Item,listDirectoryFiles}
+module.exports = {uploadImageJpeg,getS3Item,putS3Item,listDirectoryFiles,deleteS3Item}
