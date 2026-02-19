@@ -48,7 +48,8 @@ async function fullDirectory(){
     let groups = await listDirectoryFiles(config.buckets.operational, `logs/groups/`);
     let execPeople = await listDirectoryFiles(config.buckets.operational, `logs/exec/`);
     let democracy = await listDirectoryFiles(config.buckets.operational, `logs/democracy/`);
-    groups = groups.sort(); execPeople = execPeople.sort(); democracy = democracy.sort();
+    let policy = await listDirectoryFiles(config.buckets.operational, `logs/policy/`);
+    groups = groups.sort(); execPeople = execPeople.sort(); democracy = democracy.sort(); policy = policy.sort();
     
     // content
     let content = ""
@@ -68,6 +69,11 @@ async function fullDirectory(){
         content += `<a href="/admin/audit?id=dem*${article}">${article}</a><br>`
     }
 
+    content += `<br><b>Policy Documents</b><br><br>`
+    for(let article of policy){
+        content += `<a href="/admin/audit?id=pol*${article}">${policyNumberFormat(article)}</a><br>`
+    }
+
     return content
 }
 
@@ -83,6 +89,9 @@ async function singleLog(query){
     } else if(querySplit[0] == "dem"){
         searchKey = `logs/democracy/${querySplit[1]}.json`;
         type = "Democracy Article";
+    } else if(querySplit[0] == "pol"){
+        searchKey = `logs/policy/${querySplit[1]}.json`;
+        type = "Policy Document";
     } else {
         searchKey = `logs/exec/${querySplit[1]}.json`;
         type = "Profile of a Member of the Exec";
@@ -106,4 +115,9 @@ async function singleLog(query){
     }
 
     return content;
+}
+
+// policy number to official number
+function policyNumberFormat(number){
+    return `P/${String(number).padStart(3, '0')}`
 }
