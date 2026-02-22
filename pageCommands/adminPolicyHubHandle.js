@@ -80,8 +80,8 @@ module.exports = {
             if(inputBody.pdfDataUrl.includes("application/pdf" == false)){
                 failure.push("Only PDFs are accepted");
                 update = false;
-            } else if(buffer.length > 1536*1024){
-                failure.push(`Maximum 1536 KB accepted. This file is ${Math.ceil(buffer.length / 1024)} KB large (rounded up)`);
+            } else if(buffer.length > 3*1024*1024){
+                failure.push(`Maximum ${3*1024} KB accepted. This file is ${Math.ceil(buffer.length / 1024)} KB large (rounded up)`);
                 update = false;
             } else if(update == true) {
                 const command = new PutObjectCommand({
