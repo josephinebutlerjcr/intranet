@@ -30,7 +30,7 @@ module.exports = {
             <label>Lapse Month and Year</label>
             <input type="text" name="lapse" class="inputField" placeholder="Lapse Month, e.g. February 2027" required autocomplete="off">
 
-            <label for="pdfFile">Upload PDF (max 1.5 MB):</label>
+            <label for="pdfFile">Upload PDF (max 3 MB):</label>
             <input type="file" id="pdfFile" accept="application/pdf" required class="inputField">
             <input type="hidden" name="pdfDataUrl" id="pdfDataUrl" autocomplete="off">
 
@@ -40,7 +40,7 @@ module.exports = {
         <script>
             const fileInput = document.getElementById('pdfFile');
             const hiddenInput = document.getElementById('pdfDataUrl');
-            const MAX_SIZE = 1536 * 1024;
+            const MAX_SIZE = 3 * 1024 * 1024;
 
             fileInput.addEventListener('change', () => {
                 const file = fileInput.files[0];
@@ -51,7 +51,7 @@ module.exports = {
                     return;
                 }
                 if (file.size > MAX_SIZE) {
-                    alert('File is too large. Max 1.5 MB allowed.');
+                    alert('File is too large. Max 3 MB allowed.');
                     fileInput.value = '';
                     return;
                 }
