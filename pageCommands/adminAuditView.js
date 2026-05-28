@@ -49,6 +49,7 @@ async function fullDirectory(){
     let execPeople = await listDirectoryFiles(config.buckets.operational, `logs/exec/`);
     let democracy = await listDirectoryFiles(config.buckets.operational, `logs/democracy/`);
     let policy = await listDirectoryFiles(config.buckets.operational, `logs/policy/`);
+    let operational = await listDirectoryFiles(config.buckets.operational, `logs/operational/`);
     groups = groups.sort(); execPeople = execPeople.sort(); democracy = democracy.sort(); policy = policy.sort();
     
     // content
@@ -74,6 +75,11 @@ async function fullDirectory(){
         content += `<a href="/admin/audit?id=pol*${article}">${policyNumberFormat(article)}</a><br>`
     }
 
+    content += `<br><b>Other Operational Logs NEC</b><br><br>`
+    for(let article of operational){
+        content += `<a href="/admin/audit?id=ops*${article}">${article}</a><br>`
+    }
+
     return content
 }
 
@@ -92,6 +98,9 @@ async function singleLog(query){
     } else if(querySplit[0] == "pol"){
         searchKey = `logs/policy/${querySplit[1]}.json`;
         type = "Policy Document";
+    } else if(querySplit[0] == "ops"){
+        searchKey = `logs/operational/${querySplit[1]}.json`;
+        type = "Other Operational Log NEC";
     } else {
         searchKey = `logs/exec/${querySplit[1]}.json`;
         type = "Profile of a Member of the Exec";
