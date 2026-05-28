@@ -38,6 +38,7 @@ module.exports = {
         <div class="grid-section">
             <div class="card"><i class="fas fa-users" style="font-size: 2.5rem; margin-bottom: 8px; color: #f0d954;"></i><h3>Student Groups' Registry</h3><p>View a full list of student groups (societies; committees; sports), and manage the register.</p><a href="/exec/groups">Groups Registry →</a></div>
             <div class="card"><i class="fas fa-user-circle" style="font-size: 2.5rem; margin-bottom: 8px; color: #f0d954;"></i><h3>Your Profile</h3><p>Edit your profile, as it appears to members in the "Whose Who" page (and main website, for sabbs).</p><a href="/exec/me">Edit Me →</a></div>
+            <div class="card" style="text-align: center;"><i class="fas fa-file" style="font-size: 2.5rem; margin-bottom: 8px; color: #f0d954;"></i><h3>Pages</h3><p>Update Public Facing Pages of the Website</p><a href="/exec/pages">Pages →</a></div>
             ${extras}
         </div>
         
