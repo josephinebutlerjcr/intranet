@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Butler JCR Media Manager</title>
+
+    <link rel="stylesheet" href="https://www.butlerjcr.com/style.css">
+
+    <style>
+        main {
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .filedrop, select {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: 1px dashed #cbd5e1;
+            background: #f8fafc;
+            border-radius: 6px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+
+        select {
+            border-style: solid;
+            cursor: pointer;
+        }
+
+        .exploreList {
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: #ffffff;
+        }
+
+        .exploreRow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .exploreRow:last-child {
+            border-bottom: none;
+        }
+
+        .fileMeta {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .rowOps {
+            display: flex;
+            gap: 10px;
+        }
+
+        .msgStatus {
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        .msgEmpty {
+            padding: 40px;
+            text-align: center;
+            color: #64748b;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main>
+        <h1 style="margin: 0; font-weight: 700; letter-spacing: -0.025em;">Media Manager</h1>
+        
+        <br>
+
+        <section class="card">
+            <h2 style="margin-top: 0;">Upload Image</h2>
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label for="destinationSelect">Select Destination</label>
+                    <select id="destinationSelect" name="destination" required>
+                        <option value="" disabled selected>Choose a destination folder...</option>
+                        <option value="stash">stash</option>
+                        <option value="welfare">welfare</option>
+                        <option value="college">college</option>
+                        <option value="freshers">freshers</option>
+                        <option value="other">other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="fileInput">Select File Target</label>
+                    <span style="font-size: 0.85rem; color: #B1333A; display: block; margin-top: -4px; margin-bottom: 8px;">Maximum: 5MB. JPG, JPEG, PNG only.</span>
+                    <input type="file" id="fileInput" class="filedrop" accept="image/jpeg, image/jpg, image/png" required />
+                </div>
+
+                <input type="hidden" id="imageDataUrl" name="imageDataUrl">
+
+                <input type="hidden" id="fileName" name="fileName">
+
+                <button type="submit" class="redirect-button" id="uploadBtn">Upload</button>
+            </form>
+            <div id="statusMessage" class="msgStatus"></div>
+        </section>
+
+        <section class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;">Link Finder</h2>
+                                
+                <button id="refreshBtn" class="redirect-button" style="padding: 6px 14px; font-size: 0.85rem; background-color: transparent; color: #334155; border: 1px solid #cbd5e1;">Refresh</button>
+            </div>
+
+            <span style="font-size: 0.85rem; color: #B1333A; display: block; margin-top: -4px; margin-bottom: 8px;">Selection excludes avatars and student group logos.</span>
+
+            <div id="fileListContainer" class="exploreList">
+                <div class="msgEmpty">Syncing...</div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadForm = document.getElementById('uploadForm');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const fileListContainer = document.getElementById('fileListContainer');
+        const refreshBtn = document.getElementById('refreshBtn');
+
+        // Added references for your specific requirements
+        const destinationSelect = document.getElementById('destinationSelect');
+        const imageDataUrlInput = document.getElementById('imageDataUrl');
+        const fileNameInput = document.getElementById('fileName');
+
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB Validation Guard
+        const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
+
+        // Intercept, validate, and convert file to Data URL instantly upon selection
+        fileInput.addEventListener('change', () => {
+            const chosenFile = fileInput.files[0];
+            
+            if (!chosenFile) {
+                clearHiddenInputs();
+                return;
+            }
+
+            // (a) Validate file type and file size thresholds via JavaScript
+            if (!ALLOWED_TYPES.includes(chosenFile.type)) {
+                statusMessage.style.color = '#B1333A';
+                statusMessage.textContent = 'Invalid file type. JPG, JPEG, and PNG only.';
+                uploadBtn.disabled = true;
+                clearHiddenInputs();
+                return;
+            } else if (chosenFile.size > MAX_FILE_SIZE) {
+                statusMessage.style.color = '#B1333A';
+                statusMessage.textContent = 'This file exceeds the 5MB limit.';
+                uploadBtn.disabled = true;
+                clearHiddenInputs();
+                return;
+            } else {
+                statusMessage.textContent = '';
+                uploadBtn.disabled = false;
+            }
+
+            // (d) Set hidden box for the name of the file
+            fileNameInput.value = chosenFile.name;
+
+            // (b) Read file directly to transform it into a Data URL string
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                imageDataUrlInput.value = e.target.result;
+            };
+            reader.readAsDataURL(chosenFile);
+        });
+
+        function clearHiddenInputs() {
+            imageDataUrlInput.value = '';
+            fileNameInput.value = '';
+        }
+
+        // Handle Form Uploads via JSON containing the structured inputs
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const dataUrl = imageDataUrlInput.value;
+            const destination = destinationSelect.value;
+            const nameOfFile = fileNameInput.value;
+
+            if (!dataUrl) return;
+
+            // Build payload mapping your exact rules
+            const payload = {
+                destination: destination,
+                fileName: nameOfFile,
+                imageStream: dataUrl
+            };
+
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Streaming Object File...';
+
+            try {
+                const response = await fetch('/exec/pages/upload', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    statusMessage.style.color = '#16a34a';
+                    statusMessage.textContent = data.msg;
+                    uploadForm.reset();
+                    clearHiddenInputs();
+                    fetchS3Files(); // Reload list index view
+                } else if(response.ok){
+                    throw new Error(data.msg);
+                } else {
+                    throw new Error(data.error || 'The remote handler rejected your data stream processing.');
+                }
+            } catch (error) {
+                statusMessage.style.color = '#B1333A';
+                statusMessage.textContent = `Upload Blocked: ${error.message}`;
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = 'Upload';
+            }
+        });
+
+        // Pull S3 Object lists from endpoint route mapping
+        async function fetchS3Files() {
+            try {
+                const response = await fetch('/exec/pages/upload?opt=files');
+                const data = await response.json();
+
+                fileListContainer.innerHTML = '';
+
+                if (data.length === 0) {
+                    fileListContainer.innerHTML = '<div class="msgEmpty">No Files</div>';
+                    return;
+                }
+
+                data.forEach(file => {
+                    const rowItem = document.createElement('div');
+                    rowItem.className = 'exploreRow';
+
+                    rowItem.innerHTML = `
+          <div>
+            <div style="font-weight: 600; color: #1e293b; word-break: break-all;">${file.key}</div>
+            <div class="fileMeta">Storage Allocated: ${file.size} | Last Modified: ${new Date(file.lastModified).toLocaleDateString()}</div>
+          </div>
+          <div class="rowOps">
+            <button class="btn btn-view" data-url="${file.url}" style="padding: 6px 12px; font-size: 0.8rem; margin: 0;">Open Window</button>
+            <button class="btn btn-copy" data-url="${file.url}" style="padding: 6px 12px; font-size: 0.8rem; margin: 0; background-color: #16a34a;">Copy Link</button>
+          </div>
+        `;
+                    fileListContainer.appendChild(rowItem);
+                });
+            } catch (err) {
+                fileListContainer.innerHTML = `<div class="msgEmpty" style="color: #B1333A;">Error: ${err.message}</div>`;
+            }
+        }
+
+        // Consolidated Event Delegate handlers for row interaction click bindings
+        fileListContainer.addEventListener('click', (e) => {
+            const assetUrl = e.target.getAttribute('data-url');
+            if (!assetUrl) return;
+
+            // View handler: Renders object in targeted screen-centered dimension window parameters
+            if (e.target.classList.contains('btn-view')) {
+                const w = 750;
+                const h = 800;
+                const left = (screen.width / 2) - (w / 2);
+                const top = (screen.height / 2) - (h / 2);
+                const features = `width=${w},height=${h},top=${top},left=${left},resizable=yes,scrollbars=yes`;
+
+                window.open(assetUrl, 'JcrAssetWindow', features);
+            }
+
+            // Copy handler: Copies URL to clipboard
+            if (e.target.classList.contains('btn-copy')) {
+                const copyBtnTarget = e.target;
+                navigator.clipboard.writeText(assetUrl)
+                    .then(() => {
+                        const defaultLabelText = copyBtnTarget.textContent;
+                        copyBtnTarget.textContent = 'Copied!';
+                        copyBtnTarget.style.backgroundColor = '#1e293b';
+
+                        setTimeout(() => {
+                            copyBtnTarget.textContent = defaultLabelText;
+                            copyBtnTarget.style.backgroundColor = '#16a34a';
+                        }, 1500);
+                    })
+                    .catch(err => console.error('System Clipboard engine rejection:', err));
+            }
+        });
+
+        refreshBtn.addEventListener('click', fetchS3Files);
+        fetchS3Files(); // Initial rendering scan on app boot up
+    </script>
+
+</body>
+
+</html>
