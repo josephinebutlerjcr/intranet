@@ -49,7 +49,10 @@ module.exports = {
             // the page as viewed to the user.
             subcontent += `<blockquote>You are editing: ${inputQuery}. <a href="?">Go Back</a></blockquote>
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css"><script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
-            <form action="/exec/pages" method="post">
+            
+            <button onclick="uploaderWindow()" class="redirect-button">View & Upload Images</button>
+            
+            <form action="/exec/pages" method="post">            
                 <textarea id="editor" name="editor">${inputMarkdown}</textarea>
 
                 <label id="declaration">I, ${verification.cis}, can declare that I am authorised to edit this page by my exec responsibility, or by the exec mandate, and can confirm that the information I am providing is truly accurate, does not breach any laws, does not breach any JCR policies, or cause offense to members of the public. I understand that the changes are logged against my username.</label>
@@ -75,13 +78,24 @@ module.exports = {
         <button class="redirect-button" onclick="location.href='/exec'">Executive's Dashboard</button>
         
         <section style="display: flex; justify-content: center;">
-            <section class="latest-news" style="padding: 3rem 1rem; max-width: 600px; text-align: left;">
+            <section class="latest-news" style="padding: 3rem 1rem; max-width: 900px; text-align: left;">
                 <h2 style="text-align: center;">Pages</h2>
                 <p>Please read the manual before making any changes.</p>
                 ${subcontent}
             </section>
-        </section>`
-        
+        </section>
+
+        <script>
+            function uploaderWindow(url) {
+                const width = 600;
+                const height = 700;
+                const left = (screen.width / 2) - (width / 2);
+                const top = (screen.height / 2) - (height / 2);
+                const windowFeatures = \`width=\${width},height=\${height},top=\${top},left=\${left},resizable=yes,scrollbars=yes\`;
+                    window.open("/exec/pages/upload", 'S3FileWindow', windowFeatures);
+            }
+        </script>`
+                
         // sending it to the user
         let resp = fs.readFileSync("./assets/html/generalPage.html").toString()
             .replace(/{{pageNameShort}}/g, "Pages")
