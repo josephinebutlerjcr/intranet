@@ -101,16 +101,15 @@ async function tableView(){
 async function societyView(society){
     // soc people directory
     let societyPeople = "";
-    let roleNames = Object.keys(society.admins);
+    //let roleNames = Object.keys(society.admins);
+    let roleNames = ["president","vicepresident","treasurer","socialsec"];
     for(const role of roleNames){
         const peopleCIS = society.admins[role];
-        let extraCo = "";
-        if(peopleCIS.length != 1){extraCo = "co-"}
 
         for(const personCIS of peopleCIS){
             const person = await getItem(config.tables.users, {cis: personCIS});
             let personName = person.name || personCIS;
-            societyPeople += `${extraCo}${role}: ${personName} (<a href="mailto:${personCIS}@durham.ac.uk" target="_blank">${personCIS}</a>)<br>`;
+            societyPeople += `${role}: ${personName} (<a href="mailto:${personCIS}@durham.ac.uk" target="_blank">${personCIS}</a>)<br>`;
         }
     }
 

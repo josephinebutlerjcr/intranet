@@ -123,23 +123,38 @@ module.exports = {
         let joinedSS = ""; if(!!society.admins.socialsec){joinedSS = society.admins.socialsec.join(",")}
 
         if(!!inputBody.vicepresident && inputBody.vicepresident != joinedVp){
-            let tmp = inputBody.vicepresident.split(",");
+            let tmp = inputBody.vicepresident.split(",").map(x => x.trim());
             let allow = true;
-            if(/^[a-zA-Z]{4}\d{2}$/.test(tmp[0]) == false){
-                failure.push("Vice President invalid; invalid CIS code for first person");
-                update = false;
-                allow = false;
-            } else if(tmp[0] == "abcd12") {
+
+            if (tmp[0] === "abcd12") {
                 success.push("Removed vice president(s)");
                 tmp = [];
-            } else if(!!tmp[1]){
-                if(/^[a-zA-Z]{4}\d{2}$/.test(tmp[1]) == false || tmp[1] == "abcd12"){
-                    failure.push("Vice president invalid; invalid CIS code for second person - they have been removed otherwise");
-                    tmp = [tmp[0]];
+            } else {
+                if (tmp.length > 6) {
+                    failure.push("Vice President invalid; maximum of 6 vice presidents allowed");
+                    update = false;
+                    allow = false;
+                } else {
+                    for (let i = 0; i < tmp.length; i++) {
+                        if (!/^[a-zA-Z]{4}\d{2}$/.test(tmp[i])) {
+                            failure.push(`Vice President invalid; invalid CIS code for person ${i + 1}`);
+                            update = false;
+                            allow = false;
+                            break;
+                        }
+
+                        if (i > 0 && tmp[i] === "abcd12") {
+                            failure.push(`Vice President invalid; invalid CIS code for person ${i + 1}`);
+                            update = false;
+                            allow = false;
+                            break;
+                        }
+                    }
                 }
             }
-            if(allow){
-                success.push(`Changed VP(s) from ${joinedVp} to ${tmp.join(",") || ""}`)
+
+            if (allow) {
+                success.push(`Changed VP(s) from ${joinedVp} to ${tmp.join(",") || ""}`);
                 society.admins.vicepresident = tmp;
             }
         }
