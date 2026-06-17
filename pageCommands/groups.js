@@ -70,18 +70,21 @@ async function individualSociety(society, verification){
     //let roleNames = Object.keys(society.admins);
     let roleNames = ["president","vicepresident","treasurer","socialsec"];
     for(const role of roleNames){
-        const peopleCIS = society.admins[role];
+        if(!!society.admins[role]){
+            const peopleCIS = society.admins[role];
 
-        for(const personCIS of peopleCIS){
-            const person = await getItem(config.tables.users, {cis: personCIS});
-            let cisDisplay = true;
-            if(!person.name){cisDisplay = false}
-            let personName = person.name || "Name Not Available";
-            if(cisDisplay){
-                exec += `${role}: ${personName} (<a href="mailto:${personCIS}@durham.ac.uk" target="_blank">${personCIS}</a>)<br>`;
-            } else {
-                exec += `${role}: Name Not On Display<br>`;
+            for(const personCIS of peopleCIS){
+                const person = await getItem(config.tables.users, {cis: personCIS});
+                let cisDisplay = true;
+                if(!person.name){cisDisplay = false}
+                let personName = person.name || "Name Not Available";
+                if(cisDisplay){
+                    exec += `${role}: ${personName} (<a href="mailto:${personCIS}@durham.ac.uk" target="_blank">${personCIS}</a>)<br>`;
+                } else {
+                    exec += `${role}: Name Not On Display<br>`;
+                }
             }
+
         }
     }
 

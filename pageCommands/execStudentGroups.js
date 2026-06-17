@@ -104,12 +104,14 @@ async function societyView(society){
     //let roleNames = Object.keys(society.admins);
     let roleNames = ["president","vicepresident","treasurer","socialsec"];
     for(const role of roleNames){
-        const peopleCIS = society.admins[role];
+        if(!!society.admins[role]){
+            const peopleCIS = society.admins[role];
 
-        for(const personCIS of peopleCIS){
-            const person = await getItem(config.tables.users, {cis: personCIS});
-            let personName = person.name || personCIS;
-            societyPeople += `${role}: ${personName} (<a href="mailto:${personCIS}@durham.ac.uk" target="_blank">${personCIS}</a>)<br>`;
+            for(const personCIS of peopleCIS){
+                const person = await getItem(config.tables.users, {cis: personCIS});
+                let personName = person.name || personCIS;
+                societyPeople += `${role}: ${personName} (<a href="mailto:${personCIS}@durham.ac.uk" target="_blank">${personCIS}</a>)<br>`;
+            }
         }
     }
 
