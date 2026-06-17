@@ -95,17 +95,19 @@ module.exports = {
                     <h3>People</h3>
 
                     <p>In this "people" section, provide the CIS codes of people involved in the group's executive. President is the only essential field. If the position is joint between two people, separate the two CIS codes with a comma (,). Enter "abcd12" as a dummy CIS code to remove the field (optional fields only)</p>
+                    
+                    <p>As of the 18th of June, the Vice President limit has changed to 6 - as certain sports have captains for different teams.</p>
 
-                    <label id="preident">(Co-)President / Chair(s)</label>
+                    <label id="preident">President(s)</label>
                     <input type="text" class="inputField" name="president" id="president" value="${society.admins.president.join(",")}" autocomplete="off" required pattern="[a-zA-Z]{4}\\d{2}(,[a-zA-Z]{4}\\d{2})?">
 
-                    <label id="vicepresident">(Co-)Vice-President / Vice-Captain(s) (optional)</label>
-                    <input type="text" class="inputField" name="vicepresident" id="vicepresident" value="${society.admins.vicepresident.join(",")}" autocomplete="off" pattern="[a-zA-Z]{4}\\d{2}(,[a-zA-Z]{4}\\d{2})?">
+                    <label id="vicepresident">Vice President(s) / Captain(s) (optional)</label>
+                    <input type="text" class="inputField" name="vicepresident" id="vicepresident" value="${society.admins.vicepresident.join(",")}" autocomplete="off" pattern="^[a-zA-Z]{4}\d{2}(,[a-zA-Z]{4}\d{2}){0,5}$">
 
-                    <label id="treasurer">(Co-)Treasurer(s) (optional)</label>
+                    <label id="treasurer">Treasurer(s) (optional)</label>
                     <input type="text" class="inputField" name="treasurer" id="treasurer" value="${society.admins.treasurer.join(",")}" autocomplete="off" pattern="[a-zA-Z]{4}\\d{2}(,[a-zA-Z]{4}\\d{2})?">
 
-                    <label id="socialsec">(Co-)Social Secretar(y/ies) (optional)</label>
+                    <label id="socialsec">Social Secretar(y/ies) (optional)</label>
                     <input type="text" class="inputField" name="socialsec" id="socialsec" value="${society.admins.socialsec.join(",")}" autocomplete="off" pattern="[a-zA-Z]{4}\\d{2}(,[a-zA-Z]{4}\\d{2})?">
 
                     <h3>Events</h3>

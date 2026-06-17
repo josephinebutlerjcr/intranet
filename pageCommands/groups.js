@@ -67,11 +67,10 @@ async function individualSociety(society, verification){
     if(!!society.socials.whatsapp){socials += `<a href="https://chat.whatsapp.com/${society.socials.whatsapp}" target="_blank"><i class="fab fa-whatsapp"></i></a>`}
 
     // exec
-    let roleNames = Object.keys(society.admins);
+    //let roleNames = Object.keys(society.admins);
+    let roleNames = ["president","vicepresident","treasurer","socialsec"];
     for(const role of roleNames){
         const peopleCIS = society.admins[role];
-        let extraCo = "";
-        if(peopleCIS.length != 1){extraCo = "co-"}
 
         for(const personCIS of peopleCIS){
             const person = await getItem(config.tables.users, {cis: personCIS});
@@ -79,9 +78,9 @@ async function individualSociety(society, verification){
             if(!person.name){cisDisplay = false}
             let personName = person.name || "Name Not Available";
             if(cisDisplay){
-                exec += `${extraCo}${role}: ${personName} (<a href="mailto:${personCIS}@durham.ac.uk" target="_blank">${personCIS}</a>)<br>`;
+                exec += `${role}: ${personName} (<a href="mailto:${personCIS}@durham.ac.uk" target="_blank">${personCIS}</a>)<br>`;
             } else {
-                exec += `${extraCo}${role}: Name Not On Display<br>`;
+                exec += `${role}: Name Not On Display<br>`;
             }
         }
     }
