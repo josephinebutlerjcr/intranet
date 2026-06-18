@@ -102,7 +102,7 @@ module.exports = {
                     <input type="text" class="inputField" name="president" id="president" value="${society.admins.president.join(",")}" autocomplete="off" required pattern="[a-zA-Z]{4}\\d{2}(,[a-zA-Z]{4}\\d{2})?">
 
                     <label id="vicepresident">Vice President(s) / Captain(s) (optional)</label>
-                    <input type="text" class="inputField" name="vicepresident" id="vicepresident" value="${society.admins.vicepresident.join(",")}" autocomplete="off" pattern="[a-zA-Z]{4}\d{2}(,[a-zA-Z]{4}\d{2}){0,5}">
+                    <input type="text" class="inputField" name="vicepresident" id="vicepresident" value="${society.admins.vicepresident.join(",")}" autocomplete="off" pattern="[a-zA-Z]{4}\\d{2}(,[a-zA-Z]{4}\\d{2}){0,5}">
 
                     <label id="treasurer">Treasurer(s) (optional)</label>
                     <input type="text" class="inputField" name="treasurer" id="treasurer" value="${society.admins.treasurer.join(",")}" autocomplete="off" pattern="[a-zA-Z]{4}\\d{2}(,[a-zA-Z]{4}\\d{2})?">
