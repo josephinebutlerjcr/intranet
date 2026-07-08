@@ -28,7 +28,7 @@ module.exports = {
                 webmasterCis = `${person}@durham.ac.uk`
             }
         }*/
-       let webmasterCis = "butlerwebmaster@durham.ac.uk"
+       let webmasterCis = "webmaster@butlerjcr.com"
 
         // finds who to send to
         let sendList = {};
