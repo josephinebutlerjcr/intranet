@@ -3,7 +3,8 @@
     "replytoEmail":"webmaster@butlerjcr.com",
     "tables":{
         "users":"users",
-        "groups":"groups"
+        "groups":"groups",
+        "tech":"techhire"
     },
     "buckets":{
         "content":"butler-jcr-public",
