@@ -3,7 +3,7 @@ const config = require("../config.json")
 //const { getItem, putItem, scanItems } = require("../auxilliaryFunctions/dynamodb"); // database
 //const {uploadImageJpeg,getS3Item,putS3Item,listDirectoryFiles,deleteS3Item} = require("../auxilliaryFunctions/s3"); // storage system for other binaries
 //const {sendEmail} = require("../auxulliaryFunctions/email"); // self-explanatory
-const {parseBody/*, getTime, generateToken*/} = require("../auxilliaryFunctions/formatting");
+const {parseBody, getTime} = require("../auxilliaryFunctions/formatting");
 
 // main
 module.exports = {
@@ -50,6 +50,26 @@ module.exports = {
         // this assumes JSON output
         let returnJson = {}
 
+        /*
+        Hint: you may want to log changes:
+        // logbook changes
+            let logBook = []
+            try {
+                logBook = await getS3Item(config.buckets.operational,`logs/operational/techhire-[leave blank or add a name].json`)
+                logBook = JSON.parse(logBook);
+            } catch(err){
+                logBook = [];
+            }
+            logBook.push({
+                time: getTime(),
+                person: verification.cis,
+                notes:success
+            })
+            try {
+                await putS3Item(JSON.stringify(logBook),config.buckets.operational, `logs/operational/-[leave blank or add a name].json`)
+            } catch(err){}
+        */
+       
         return{
             body:JSON.stringify(returnJson),
             headers:{"Content-Type":"application/json"}
