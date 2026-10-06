@@ -24,7 +24,8 @@ module.exports = {
             <div class="card"><i class="fas fa-address-book" style="font-size: 2.5rem; margin-bottom: 8px; color: #f0d954;"></i><h3>Members Registry</h3><p>Edit the members details.</p><a href="/admin/registry">Registry →</a></div>
             <div class="card"><i class="fas fa-address-book" style="font-size: 2.5rem; margin-bottom: 8px; color: #f0d954;"></i><h3>Emailer</h3><p>Emails the general exec, and president of societies, for information.</p><a href="/admin/emailer">Email →</a></div>
             <div class="card" style="text-align: center;"><i class="fas fa-clipboard-list" style="font-size: 2.5rem; margin-bottom: 8px; color: #f0d954;"></i><h3>Audit Logs</h3><p>View a full history of changes to societies and the exec (including profiles)</p><a href="/admin/audit">View Logs →</a></div>
-            <div class="card" style="text-align: center;"><i class="fas fa-file" style="font-size: 2.5rem; margin-bottom: 8px; color: #f0d954;"></i><h3>Policy Portal</h3><p>View and upload / amend policies available on the main website</p><a href="/admin/policy">Policy Hub →</a></div>`
+            <div class="card" style="text-align: center;"><i class="fas fa-file" style="font-size: 2.5rem; margin-bottom: 8px; color: #f0d954;"></i><h3>Policy Portal</h3><p>View and upload / amend policies available on the main website</p><a href="/admin/policy">Policy Hub →</a></div>
+            <div class="card" style="text-align: center;"><i class="fas fa-link" style="font-size: 2.5rem; margin-bottom: 8px; color: #f0d954;"></i><h3>Affiliations Portal</h3><p>View all affiliations</p><a href="/admin/affiliations">Affiliations Hub →</a></div>`
         }
         
 
